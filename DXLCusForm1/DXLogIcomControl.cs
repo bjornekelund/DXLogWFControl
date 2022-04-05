@@ -126,9 +126,9 @@ namespace DXLog.net
             _cdata = cdata;
             FormLayoutChangeEvent += new FormLayoutChange(handle_FormLayoutChangeEvent);
 
-            ContextMenuStrip.Items.RemoveByKey("fixWindowSizeToolStripMenuItem");
             while (contextMenuStrip1.Items.Count > 0)
                 contextMenuStrip2.Items.Add(contextMenuStrip1.Items[0]);
+            contextMenuStrip2.Items.RemoveByKey("fixWindowSizeToolStripMenuItem");
         }
 
         private void handle_FormLayoutChangeEvent()
@@ -445,6 +445,16 @@ namespace DXLog.net
         private void OnRefSliderKey(object sender, KeyEventArgs e)
         {
             UpdateRefSlider();
+        }
+
+        private void propertiesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form prop = new IcomProperties();
+
+            if (prop.ShowDialog() == DialogResult.OK)
+            {
+                // Save stuff
+            }
         }
 
         private void ToggleBarefoot(object sender, EventArgs e)

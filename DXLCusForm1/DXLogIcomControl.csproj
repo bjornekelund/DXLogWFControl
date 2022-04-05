@@ -76,11 +76,20 @@
     <Compile Include="DXLogIcomControl.Designer.cs">
       <DependentUpon>DXLogIcomControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="IcomProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IcomProperties.Designer.cs">
+      <DependentUpon>IcomProperties.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DXLogIcomControl.resx">
       <DependentUpon>DXLogIcomControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IcomProperties.resx">
+      <DependentUpon>IcomProperties.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
