@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using DXLog.net;
+using ConfigFile;
+using IOComm;
 
 namespace DXLog.net
 {
@@ -23,7 +25,7 @@ namespace DXLog.net
         }
         
         private ContestData _cdata = null;
-        private Font _windowFont = new Font("Courier New", 10, FontStyle.Regular);
+        //private Font _windowFont = new Font("Courier New", 10, FontStyle.Regular);
 
         private FrmMain mainForm = null;
 
@@ -33,12 +35,12 @@ namespace DXLog.net
         //private string programTitle = "ICOM Automagic";
         //private readonly AssemblyName _assemblyName = Assembly.GetExecutingAssembly().GetName();
         //private static Brush SpecialGreen = (Brush)new Brush().ConvertFrom("#ff58f049");
-        private static Color SpecialGreen = Color.Green;
-        private readonly Color ActiveColor = SpecialGreen; // Color for active button
-        private readonly Color PassiveColor = Color.LightGray; // Color for passive button
-        private readonly Color BarefootColor = Color.DarkGreen; // Color for power label when barefoot
-        private readonly Color ExciterColor = Color.Black; // Color for power label when using PA
-        private readonly Color BandModeColor = Color.Blue; // Color for valid band and mode display
+        //private static Color SpecialGreen = Color.Green;
+        //private readonly Color ActiveColor = SpecialGreen; // Color for active button
+        //private readonly Color PassiveColor = Color.LightGray; // Color for passive button
+        //private readonly Color BarefootColor = Color.DarkGreen; // Color for power label when barefoot
+        //private readonly Color ExciterColor = Color.Black; // Color for power label when using PA
+        //private readonly Color BandModeColor = Color.Blue; // Color for valid band and mode display
 
         // Pre-baked CI-V commands
         private byte[] CIVSetFixedMode = { 0xfe, 0xfe, 0xff, 0xe0, 0x27, 0x14, 0x00, 0x01, 0xfd };
@@ -86,19 +88,16 @@ namespace DXLog.net
             13, 13, 13, 13, 13, 13, 13, 13, 13, 13,
             13, 13, 13, 13 };
 
-        // Per mode/band waterfall edges and ref levels. Also one zoomed ref level per band.
+        // Per mode/band waterfall edges and ref levels.
         private int[] lowerEdgeCW = new int[HamBands];
         private int[] upperEdgeCW = new int[HamBands];
         private int[] refLevelCW = new int[HamBands];
-        private int[] refLevelCWZoom = new int[HamBands];
         private int[] lowerEdgePhone = new int[HamBands];
         private int[] upperEdgePhone = new int[HamBands];
         private int[] refLevelPhone = new int[HamBands];
-        private int[] refLevelPhoneZoom = new int[HamBands];
         private int[] lowerEdgeDigital = new int[HamBands];
         private int[] upperEdgeDigital = new int[HamBands];
         private int[] refLevelDigital = new int[HamBands];
-        private int[] refLevelDigitalZoom = new int[HamBands];
         private int[] pwrLevelCW = new int[HamBands];
         private int[] pwrLevelPhone = new int[HamBands];
         private int[] pwrLevelDigital = new int[HamBands];
@@ -107,22 +106,25 @@ namespace DXLog.net
         private int currentLowerEdge, currentUpperEdge, currentRefLevel, currentPwrLevel;
         private int currentFrequency = 0, newMHz, currentMHz = 0;
         private string currentMode = string.Empty, newMode = string.Empty;
-        private bool Zoomed, RadioInfoReceived, Barefoot;
+        private bool Barefoot;
 
         private byte CIVaddress = 0x94;
-        private byte EdgeSet = 4;
         private bool UseScrollMode = true;
 
         public DXLogIcomControl()
         {
             InitializeComponent();
+
         }
 
         public DXLogIcomControl(ContestData cdata)
         {
             InitializeComponent();
             _cdata = cdata;
-            FormLayoutChangeEvent += new FormLayoutChange(handle_FormLayoutChangeEvent);
+            //FormLayoutChangeEvent += new FormLayoutChange(handle_FormLayoutChangeEvent);
+
+            string message;
+            string[] commandLineArguments = Environment.GetCommandLineArgs();
 
             while (contextMenuStrip1.Items.Count > 0)
                 contextMenuStrip2.Items.Add(contextMenuStrip1.Items[0]);
@@ -130,37 +132,124 @@ namespace DXLog.net
             contextMenuStrip2.Items.RemoveByKey("fontSizeToolStripMenuItem");
             contextMenuStrip2.Items.RemoveByKey("colorsToolStripMenuItem");
 
+            // Set the decoding arrays to default
+            for (int MHz = 0; MHz < MaxMHz; MHz++)
+            {
+                bandName[MHz] = "??m";
+                bandIndex[MHz] = 1;
+                RadioEdgeSet[MHz] = 1;
+            }
+
+            // Initialize using tables
+            for (int MHz = 0; MHz < TableSize; MHz++)
+            {
+                bandName[MHz] = REFbandName[MHz];
+                bandIndex[MHz] = REFbandIndex[MHz];
+                RadioEdgeSet[MHz] = REFRadioEdgeSet[MHz];
+            }
+
+            // Add 2m
+            for (int MHz = 137; MHz < 200; MHz++)
+            {
+                bandName[MHz] = "2m";
+                bandIndex[MHz] = 12;
+                RadioEdgeSet[MHz] = 16;
+            }
+
+            // Add 70cm
+            for (int MHz = 400; MHz < 470; MHz++)
+            {
+                bandName[MHz] = "70cm";
+                bandIndex[MHz] = 13;
+                RadioEdgeSet[MHz] = 17;
+            }
+
+            // Fetch lower and upper edges and ref levels from last time, ugly solution due to limitations in WPF settings management
+            //lowerEdgeCW = Properties.Settings.Default.LowerEdgesCW.Split(';').Select(s => int.Parse(s)).ToArray();
+            //upperEdgeCW = Properties.Settings.Default.UpperEdgesCW.Split(';').Select(s => int.Parse(s)).ToArray();
+            //refLevelCW = Properties.Settings.Default.RefLevelsCW.Split(';').Select(s => int.Parse(s)).ToArray();
+            //pwrLevelCW = Properties.Settings.Default.PwrLevelsCW.Split(';').Select(s => int.Parse(s)).ToArray();
+
+            //lowerEdgePhone = Properties.Settings.Default.LowerEdgesPhone.Split(';').Select(s => int.Parse(s)).ToArray();
+            //upperEdgePhone = Properties.Settings.Default.UpperEdgesPhone.Split(';').Select(s => int.Parse(s)).ToArray();
+            //refLevelPhone = Properties.Settings.Default.RefLevelsPhone.Split(';').Select(s => int.Parse(s)).ToArray();
+            //pwrLevelPhone = Properties.Settings.Default.PwrLevelsPhone.Split(';').Select(s => int.Parse(s)).ToArray();
+
+            //lowerEdgeDigital = Properties.Settings.Default.LowerEdgesDigital.Split(';').Select(s => int.Parse(s)).ToArray();
+            //upperEdgeDigital = Properties.Settings.Default.UpperEdgesDigital.Split(';').Select(s => int.Parse(s)).ToArray();
+            //refLevelDigital = Properties.Settings.Default.RefLevelsDigital.Split(';').Select(s => int.Parse(s)).ToArray();
+            //pwrLevelDigital = Properties.Settings.Default.PwrLevelsDigital.Split(';').Select(s => int.Parse(s)).ToArray();
+
+            //if (lowerEdgeCW.Length != HamBands)
+            //{
+            //    Properties.Settings.Default.Reset();
+            //}
+
+
             if (mainForm == null)
             {
-                mainForm = (FrmMain)(ParentForm == null ? Owner : ParentForm);
+                mainForm = (FrmMain)(ParentForm ?? Owner);
                 if (mainForm != null)
                 {
                     mainForm.scheduler.Second += UpdateRadio;
                     //_cdata.ActiveVFOChanged += new ContestData.ActiveVFOChange(UpdateRadio);
                     //_cdata.ActiveRadioBandChanged += new ContestData.ActiveRadioBandChange(UpdateRadio);
                     //_cdata.FocusedRadioChanged += new ContestData.FocusedRadioChange(UpdateRadio);
-
                 }
             }
+
+
         }
 
-        private void DXLogIcomControl_FormClosing(object sender, FormClosingEventArgs e)
+        // Save all settings when closing program
+        private void OnClosing(object sender, EventArgs e)
         {
+            // Remember window location 
+            //Properties.Settings.Default.Top = Top;
+            //Properties.Settings.Default.Left = Left;
+
+            //// Ugly but because WPF Settings can not store arrays. 
+            //// Each array is turned into a formatted string that can be read back using Parse()
+            //Properties.Settings.Default.LowerEdgesCW = string.Join(";", lowerEdgeCW.Select(i => i.ToString()).ToArray());
+            //Properties.Settings.Default.UpperEdgesCW = string.Join(";", upperEdgeCW.Select(i => i.ToString()).ToArray());
+            //Properties.Settings.Default.RefLevelsCW = string.Join(";", refLevelCW.Select(i => i.ToString()).ToArray());
+            //Properties.Settings.Default.PwrLevelsCW = string.Join(";", pwrLevelCW.Select(i => i.ToString()).ToArray());
+
+            //Properties.Settings.Default.LowerEdgesPhone = string.Join(";", lowerEdgePhone.Select(i => i.ToString()).ToArray());
+            //Properties.Settings.Default.UpperEdgesPhone = string.Join(";", upperEdgePhone.Select(i => i.ToString()).ToArray());
+            //Properties.Settings.Default.RefLevelsPhone = string.Join(";", refLevelPhone.Select(i => i.ToString()).ToArray());
+            //Properties.Settings.Default.PwrLevelsPhone = string.Join(";", pwrLevelPhone.Select(i => i.ToString()).ToArray());
+
+            //Properties.Settings.Default.LowerEdgesDigital = string.Join(";", lowerEdgeDigital.Select(i => i.ToString()).ToArray());
+            //Properties.Settings.Default.UpperEdgesDigital = string.Join(";", upperEdgeDigital.Select(i => i.ToString()).ToArray());
+            //Properties.Settings.Default.RefLevelsDigital = string.Join(";", refLevelDigital.Select(i => i.ToString()).ToArray());
+            //Properties.Settings.Default.PwrLevelsDigital = string.Join(";", pwrLevelDigital.Select(i => i.ToString()).ToArray());
+
+            ////Properties.Settings.Default.COMport = ComPort;
+            //Properties.Settings.Default.Barefoot = Barefoot;
+
+            //Properties.Settings.Default.Save();
+
             mainForm.scheduler.Second -= UpdateRadio;
         }
 
-        private void handle_FormLayoutChangeEvent()
-        {
-            InitializeLayout();
-        }
+        //private void DXLogIcomControl_FormClosing(object sender, FormClosingEventArgs e)
+        //{
+        //}
+
+        //private void handle_FormLayoutChangeEvent()
+        //{
+        //    InitializeLayout();
+        //}
 
         public override void InitializeLayout()
         {
-            InitializeLayout(_windowFont);
-            if (FormLayout.FontName.Contains("Courier"))
-                _windowFont = new Font(FormLayout.FontName, FormLayout.FontSize, FontStyle.Regular);
-            else
-                _windowFont = Helper.GetSpecialFont(FontStyle.Regular, FormLayout.FontSize);
+            //InitializeLayout(_windowFont);
+            //if (FormLayout.FontName.Contains("Courier"))
+            //    _windowFont = new Font(FormLayout.FontName, FormLayout.FontSize, FontStyle.Regular);
+            //else
+            //    _windowFont = Helper.GetSpecialFont(FontStyle.Regular, FormLayout.FontSize);
+
         }
 
         private void UpdateRadio()
@@ -199,11 +288,6 @@ namespace DXLog.net
             //Application.Current.Dispatcher.Invoke(new Action(() =>
             //{
                 // Highlight band-mode button and exit Zoomed mode if active
-                Zoomed = false;
-                ZoomButton.BackColor = PassiveColor;
-                ZoomButton.ForeColor = PassiveColor;
-                BandModeButton.BackColor= ActiveColor;
-                BandModeButton.ForeColor = ActiveColor;
 
                 // Allow entry in edge text boxes 
                 //LowerEdgeTextbox.Enabled= true;
@@ -221,13 +305,13 @@ namespace DXLog.net
                 //ModeLabel.ForeColor = BandModeColor;
 
                 // Enable UI components
-                ZoomButton.Enabled = true;
-                BandModeButton.Enabled= true;
+                //ZoomButton.Enabled = true;
+                //BandModeButton.Enabled= true;
                 //LowerEdgeTextbox.Enabled= true;
                 //UpperEdgeTextbox.Enabled = true;
-                RefLevelSlider.Enabled = true;
-                PwrLevelSlider.Enabled = true;
-                PwrLevelLabel.Enabled = true;
+                //RefLevelSlider.Enabled = true;
+                //PwrLevelSlider.Enabled = true;
+                //PwrLevelLabel.Enabled = true;
             //}));
         }
 
@@ -235,11 +319,6 @@ namespace DXLog.net
         private void OnEdgeTextboxKeydown(object sender, KeyEventArgs e)
         {
             int lower, upper;
-
-            if (!RadioInfoReceived) // Do nothing before we know the radio's frequency
-            {
-                return;
-            }
 
             if (e.KeyData == Keys.Return) // Only parse input when ENTER is hit 
             {
@@ -299,12 +378,6 @@ namespace DXLog.net
         // On band-mode button clicked
         private void OnBandModeButton(object sender, EventArgs e)
         {
-            // Do nothing if we have not yet received information from logger
-            if (!RadioInfoReceived)
-            {
-                return;
-            }
-
             switch (currentMode)
             {
                 case "CW":
@@ -328,113 +401,14 @@ namespace DXLog.net
 
             UpdateRadioReflevel(currentRefLevel);
 
-            Zoomed = false;
             //LowerEdgeTextbox.Enabled = true;
             //UpperEdgeTextbox.Enabled = true;
 
-            ZoomButton.BackColor = PassiveColor;
-            ZoomButton.ForeColor = PassiveColor;
-            BandModeButton.BackColor= ActiveColor;
-            BandModeButton.ForeColor = ActiveColor;
+            //ZoomButton.BackColor = PassiveColor;
+            //ZoomButton.ForeColor = PassiveColor;
+            //BandModeButton.BackColor= ActiveColor;
+            //BandModeButton.ForeColor = ActiveColor;
         }
-
-        // Save all settings when closing program
-        private void OnClosing(object sender, EventArgs e)
-        {
-            // Remember window location 
-            //Properties.Settings.Default.Top = Top;
-            //Properties.Settings.Default.Left = Left;
-
-            //// Ugly but because WPF Settings can not store arrays. 
-            //// Each array is turned into a formatted string that can be read back using Parse()
-            //Properties.Settings.Default.LowerEdgesCW = string.Join(";", lowerEdgeCW.Select(i => i.ToString()).ToArray());
-            //Properties.Settings.Default.UpperEdgesCW = string.Join(";", upperEdgeCW.Select(i => i.ToString()).ToArray());
-            //Properties.Settings.Default.RefLevelsCW = string.Join(";", refLevelCW.Select(i => i.ToString()).ToArray());
-            //Properties.Settings.Default.RefLevelsCWZ = string.Join(";", refLevelCWZoom.Select(i => i.ToString()).ToArray());
-            //Properties.Settings.Default.PwrLevelsCW = string.Join(";", pwrLevelCW.Select(i => i.ToString()).ToArray());
-
-            //Properties.Settings.Default.LowerEdgesPhone = string.Join(";", lowerEdgePhone.Select(i => i.ToString()).ToArray());
-            //Properties.Settings.Default.UpperEdgesPhone = string.Join(";", upperEdgePhone.Select(i => i.ToString()).ToArray());
-            //Properties.Settings.Default.RefLevelsPhone = string.Join(";", refLevelPhone.Select(i => i.ToString()).ToArray());
-            //Properties.Settings.Default.RefLevelsPhoneZ = string.Join(";", refLevelPhoneZoom.Select(i => i.ToString()).ToArray());
-            //Properties.Settings.Default.PwrLevelsPhone = string.Join(";", pwrLevelPhone.Select(i => i.ToString()).ToArray());
-
-            //Properties.Settings.Default.LowerEdgesDigital = string.Join(";", lowerEdgeDigital.Select(i => i.ToString()).ToArray());
-            //Properties.Settings.Default.UpperEdgesDigital = string.Join(";", upperEdgeDigital.Select(i => i.ToString()).ToArray());
-            //Properties.Settings.Default.RefLevelsDigital = string.Join(";", refLevelDigital.Select(i => i.ToString()).ToArray());
-            //Properties.Settings.Default.RefLevelsDigitalZ = string.Join(";", refLevelDigitalZoom.Select(i => i.ToString()).ToArray());
-            //Properties.Settings.Default.PwrLevelsDigital = string.Join(";", pwrLevelDigital.Select(i => i.ToString()).ToArray());
-
-            ////Properties.Settings.Default.COMport = ComPort;
-            //Properties.Settings.Default.Barefoot = Barefoot;
-
-            //Properties.Settings.Default.Save();
-        }
-
-        private void OnZoomButton(object sender, EventArgs e)
-        {
-            // Only do act if we have received information from logger
-            if (RadioInfoReceived)
-            {
-                //currentLowerEdge = currentFrequency - Properties.Settings.Default.ZoomWidth / 2;
-                //currentUpperEdge = currentLowerEdge + Properties.Settings.Default.ZoomWidth;
-
-                switch (currentMode)
-                {
-                    case "CW":
-                        currentRefLevel = refLevelCWZoom[bandIndex[currentMHz]];
-                        break;
-                    case "Phone":
-                        currentRefLevel = refLevelPhoneZoom[bandIndex[currentMHz]];
-                        break;
-                    default: // Digital or anything else
-                        currentRefLevel = refLevelDigitalZoom[bandIndex[currentMHz]];
-                        break;
-                }
-
-                // Set zoomed mode and color buttons accordingly
-                Zoomed = true;
-                ZoomButton.BackColor = ActiveColor;
-                ZoomButton.ForeColor = ActiveColor;
-                BandModeButton.BackColor = PassiveColor;
-                BandModeButton.ForeColor= PassiveColor;
-
-                // Disable text boxes for entry in zoomed mode
-                //LowerEdgeTextbox.Enabled = false;
-                //UpperEdgeTextbox.Enabled = false;
-
-                // Update radio and and UI 
-                UpdateRadioEdges(currentLowerEdge, currentUpperEdge, RadioEdgeSet[currentMHz]);
-                UpdateRadioReflevel(currentRefLevel);
-            }
-        }
-
-        //private void OnZoomButton_RightClick(object sender, MouseButtonEventArgs e)
-        //{
-        //    int currentport = Properties.Settings.Default.UDPPort;
-
-        //    Config configPanel = new Config(this);
-        //    configPanel.ShowDialog();
-
-        //    if (currentport != Properties.Settings.Default.UDPPort)
-        //    {
-        //        MessageBoxResult result = MessageBox.Show("Port change - Restart required", programTitle, MessageBoxButton.OK, MessageBoxImage.Question);
-        //        if (result == MessageBoxResult.OK)
-        //        {
-        //            Close();
-        //        }
-        //    }
-
-        //    ResetSerialPort();
-
-        //    // Update Zoom button text based on value of ZoomWidth
-        //    ZoomButton.Text = string.Format("±{0}kHz", Properties.Settings.Default.ZoomWidth / 2);
-
-        //    if (RadioInfoReceived)
-        //    {
-        //        UpdateRadio();
-        //    }
-        //}
 
         // On arrow key modification of slider
         private void OnRefSliderKey(object sender, KeyEventArgs e)
@@ -454,11 +428,6 @@ namespace DXLog.net
 
         private void ToggleBarefoot(object sender, EventArgs e)
         {
-            if (!RadioInfoReceived) // Do not react until we received radio info
-            {
-                return;
-            }
-
             Barefoot = !Barefoot;
 
             UpdateRadioPwrlevel(currentPwrLevel);
@@ -481,62 +450,25 @@ namespace DXLog.net
 
             UpdateRadioReflevel(currentRefLevel);
 
-            if (RadioInfoReceived) // Only remember value if we are in a known state
+            switch (currentMode)
             {
-                switch (currentMode)
-                {
-                    case "CW":
-                        if (Zoomed)
-                        {
-                            refLevelCWZoom[bandIndex[currentMHz]] = currentRefLevel;
-                        }
-                        else
-                        {
-                            refLevelCW[bandIndex[currentMHz]] = currentRefLevel;
-                        }
-
-                        break;
-                    case "Phone":
-                        if (Zoomed)
-                        {
-                            refLevelPhoneZoom[bandIndex[currentMHz]] = currentRefLevel;
-                        }
-                        else
-                        {
-                            refLevelPhone[bandIndex[currentMHz]] = currentRefLevel;
-                        }
-
-                        break;
-                    default:
-                        if (Zoomed)
-                        {
-                            refLevelDigitalZoom[bandIndex[currentMHz]] = currentRefLevel;
-                        }
-                        else
-                        {
-                            refLevelDigital[bandIndex[currentMHz]] = currentRefLevel;
-                        }
-
-                        break;
-                }
+                case "CW":
+                    refLevelCW[bandIndex[currentMHz]] = currentRefLevel;
+                    break;
+                case "Phone":
+                    refLevelPhone[bandIndex[currentMHz]] = currentRefLevel;
+                    break;
+                default:
+                    refLevelDigital[bandIndex[currentMHz]] = currentRefLevel;
+                    break;
             }
         }
-
-        // on key movement of power slider
-        //private void OnPwrSliderKey(object sender, KeyEventArgs e)
-        //{
-        //    UpdatePwrSlider();
-        //}
 
         // on mouse movement of power slider
         private void OnPwrSliderMouseClick(object sender, MouseEventArgs e)
         {
             UpdatePwrSlider();
         }
-
-        //private void OnPwrSliderMouseClick(object sender, MouseButtonEventArgs e)
-        //{
-        //}
 
         // Update pwr level on slider action
         private void UpdatePwrSlider()
@@ -570,7 +502,7 @@ namespace DXLog.net
                 0xfe, 0xfe, CIVaddress, 0xe0,
                 0x27, 0x1e,
                 (byte)((ICOMedgeSegment / 10) * 16 + (ICOMedgeSegment % 10)),
-                EdgeSet,
+                (byte)Config.Read("ICOMedgeSet", 4),
                 0x00, // Lower 10Hz & 1Hz
                 (byte)((lower_edge % 10) * 16 + 0), // 1kHz & 100Hz
                 (byte)(((lower_edge / 100) % 10) * 16 + ((lower_edge / 10) % 10)), // 100kHz & 10kHz
@@ -597,15 +529,16 @@ namespace DXLog.net
                 CIVSetFixedMode[2] = CIVaddress;
                 CIVSetFixedMode[7] = (byte)(UseScrollMode ? 0x03 : 0x01);
                 CIVSetEdgeSet[2] = CIVaddress;
-                CIVSetEdgeSet[7] = EdgeSet;
+                CIVSetEdgeSet[7] = (byte)Config.Read("ICOMedgeSet", 4);
 
-                //if (Port.IsOpen)
-                //{
-                //    Port.Write(CIVSetFixedMode, 0, CIVSetFixedMode.Length); // Set fixed mode
-                //    Port.Write(CIVSetEdgeSet, 0, CIVSetEdgeSet.Length); // set edge set EdgeSet
-                //    Port.Write(CIVSetEdges, 0, CIVSetEdges.Length); // set edge set EdgeSet
-                //    Debug.Print(string.Format("CIVSetEdges {0}", BitConverter.ToString(CIVSetEdges)));
-                //}
+                CATCommon radio1 = mainForm.COMMainProvider.RadioObject(1);
+
+                if (radio1 != null)
+                {
+                    radio1.SendCustomCommand(CIVSetFixedMode);
+                    radio1.SendCustomCommand(CIVSetEdgeSet);
+                    radio1.SendCustomCommand(CIVSetEdges);
+                }
             }
         }
 
@@ -643,7 +576,7 @@ namespace DXLog.net
                 if (Barefoot)
                 {
                     PwrLevelSlider.Enabled = false;
-                    PwrLevelLabel.ForeColor = BarefootColor;
+                    //PwrLevelLabel.ForeColor = BarefootColor;
                     //PwrLevelLabel.FontWeight = FontWeights.Bold;
                     usedPower = 255;
                     PwrLevelSlider.Value = 100;
@@ -652,7 +585,7 @@ namespace DXLog.net
                 else
                 {
                     PwrLevelSlider.Enabled = true;
-                    PwrLevelLabel.ForeColor = ExciterColor;
+                    //PwrLevelLabel.ForeColor = ExciterColor;
                     //PwrLevelLabel.FontWeight = FontWeights.Normal;
                     usedPower = (int)(255.0f * pwr_level / 100.0f + 0.99f); // Weird ICOM mapping of percent to binary
                     PwrLevelSlider.Value = pwr_level;
@@ -671,5 +604,24 @@ namespace DXLog.net
             }
         }
     }
+    public class DefaultValues
+    {
+        public string LowerEdgeCW = "1810;3500;5352;7000;10100;14000;18068;21000;24890;28000;50000;70000;144000;432000";
+        public string UpperEdgeCW = "1840;3570;5366;7040;10130;14070;18109;21070;24920;28070;50150;71000;144100;432100";
+        public string RefLevelCW = "0;0;0;0;0;0;0;0;0;0;0;0;0;0";
+        public string PwrLevelCW = "18;18;18;18;18;18;18;18;18;18;18;18;18;18";
 
+        public string LowerEdgePhone = "1840;3600;5353;7040;10100;14100;18111;21150;24931;28300;50100;70000;144200;432200";
+        public string UpperEdgePhone = "2000;3800;5366;7200;10150;14350;18168;21450;24990;28600;50500;71000;144400;432300";
+        public string RefLevelPhone = "0;0;0;0;0;0;0;0;0;0;0;0;0;0";
+        public string PwrLevelPhone = "18;18;18;18;18;18;18;18;18;18;18;18;18;18";
+
+        public string LowerEdgeDigital = "1840;3570;5352;7040;10130;14070;18089;21070;24910;28070;50300;70000;144000;432000";
+        public string UpperEdgeDigital = "1860;3600;5366;7080;10150;14100;18109;21150;24932;28110;50350;71000;144400;432400";
+        public string RefLevelDigital = "0;0;0;0;0;0;0;0;0;0;0;0;0;0";
+        public string PwrLevelDigital = "18;18;18;18;18;18;18;18;18;18;18;18;18;18";
+
+        public int EdgeSet = 4;
+        public bool UseScrolling = true;
+    }
 }

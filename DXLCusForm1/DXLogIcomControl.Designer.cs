@@ -33,8 +33,6 @@
             this.RefLevelSlider = new System.Windows.Forms.TrackBar();
             this.PwrLevelSlider = new System.Windows.Forms.TrackBar();
             this.PwrLevelLabel = new System.Windows.Forms.Label();
-            this.BandModeButton = new System.Windows.Forms.Button();
-            this.ZoomButton = new System.Windows.Forms.Button();
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.RefLevelSlider)).BeginInit();
@@ -81,26 +79,6 @@
             this.PwrLevelLabel.Text = "Pwr: ---%";
             this.PwrLevelLabel.Click += new System.EventHandler(this.ToggleBarefoot);
             // 
-            // BandModeButton
-            // 
-            this.BandModeButton.Location = new System.Drawing.Point(180, 43);
-            this.BandModeButton.Name = "BandModeButton";
-            this.BandModeButton.Size = new System.Drawing.Size(75, 23);
-            this.BandModeButton.TabIndex = 5;
-            this.BandModeButton.Text = "Band+Mode";
-            this.BandModeButton.UseVisualStyleBackColor = true;
-            this.BandModeButton.Click += new System.EventHandler(this.OnBandModeButton);
-            // 
-            // ZoomButton
-            // 
-            this.ZoomButton.Location = new System.Drawing.Point(180, 12);
-            this.ZoomButton.Name = "ZoomButton";
-            this.ZoomButton.Size = new System.Drawing.Size(75, 23);
-            this.ZoomButton.TabIndex = 6;
-            this.ZoomButton.Text = "Zoom";
-            this.ZoomButton.UseVisualStyleBackColor = true;
-            this.ZoomButton.Click += new System.EventHandler(this.OnZoomButton);
-            // 
             // contextMenuStrip2
             // 
             this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -119,10 +97,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(268, 81);
+            this.ClientSize = new System.Drawing.Size(181, 81);
             this.ContextMenuStrip = this.contextMenuStrip2;
-            this.Controls.Add(this.ZoomButton);
-            this.Controls.Add(this.BandModeButton);
             this.Controls.Add(this.PwrLevelLabel);
             this.Controls.Add(this.PwrLevelSlider);
             this.Controls.Add(this.RefLevelSlider);
@@ -133,7 +109,6 @@
             this.MinimizeBox = false;
             this.Name = "DXLogIcomControl";
             this.Text = "ICOM controller";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DXLogIcomControl_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.RefLevelSlider)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PwrLevelSlider)).EndInit();
             this.contextMenuStrip2.ResumeLayout(false);
@@ -148,8 +123,6 @@
         private System.Windows.Forms.TrackBar RefLevelSlider;
         private System.Windows.Forms.TrackBar PwrLevelSlider;
         private System.Windows.Forms.Label PwrLevelLabel;
-        private System.Windows.Forms.Button BandModeButton;
-        private System.Windows.Forms.Button ZoomButton;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
         private System.Windows.Forms.ToolStripMenuItem propertiesToolStripMenuItem;
     }
