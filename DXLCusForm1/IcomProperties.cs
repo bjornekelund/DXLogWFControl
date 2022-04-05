@@ -18,7 +18,19 @@ namespace DXLog.net
 
         public IcomProperties(string zz)
         {
+            DialogResult = DialogResult.Cancel;
+        }
 
+        private void btnOK_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.OK;
+            Close();
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
         }
     }
 }

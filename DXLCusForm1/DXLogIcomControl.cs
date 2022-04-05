@@ -121,14 +121,32 @@ namespace DXLog.net
         public DXLogIcomControl(ContestData cdata)
         {
             InitializeComponent();
-            ColorSetTypes = new string[] { "Background", "Color", "Header back color", "Header color", "Footer back color", "Footer color", "Final score color", "Selection back color", "Selection color" };
-            DefaultColors = new Color[] { Color.Turquoise, Color.Black, Color.Gray, Color.Black, Color.Silver, Color.Black, Color.Blue, Color.SteelBlue, Color.White };
             _cdata = cdata;
             FormLayoutChangeEvent += new FormLayoutChange(handle_FormLayoutChangeEvent);
 
             while (contextMenuStrip1.Items.Count > 0)
                 contextMenuStrip2.Items.Add(contextMenuStrip1.Items[0]);
             contextMenuStrip2.Items.RemoveByKey("fixWindowSizeToolStripMenuItem");
+            contextMenuStrip2.Items.RemoveByKey("fontSizeToolStripMenuItem");
+            contextMenuStrip2.Items.RemoveByKey("colorsToolStripMenuItem");
+
+            if (mainForm == null)
+            {
+                mainForm = (FrmMain)(ParentForm == null ? Owner : ParentForm);
+                if (mainForm != null)
+                {
+                    mainForm.scheduler.Second += UpdateRadio;
+                    //_cdata.ActiveVFOChanged += new ContestData.ActiveVFOChange(UpdateRadio);
+                    //_cdata.ActiveRadioBandChanged += new ContestData.ActiveRadioBandChange(UpdateRadio);
+                    //_cdata.FocusedRadioChanged += new ContestData.FocusedRadioChange(UpdateRadio);
+
+                }
+            }
+        }
+
+        private void DXLogIcomControl_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            mainForm.scheduler.Second -= UpdateRadio;
         }
 
         private void handle_FormLayoutChangeEvent()
@@ -143,37 +161,14 @@ namespace DXLog.net
                 _windowFont = new Font(FormLayout.FontName, FormLayout.FontSize, FontStyle.Regular);
             else
                 _windowFont = Helper.GetSpecialFont(FontStyle.Regular, FormLayout.FontSize);
-
-            if (mainForm == null)
-            {
-                mainForm = (FrmMain)(ParentForm == null ? Owner : ParentForm);
-                if (mainForm != null)
-                    mainForm.NewQSOSaved += new FrmMain.NewQSOSavedEvent(mainForm_NewQSOSaved);
-            }
-        }
-
-        private void mainForm_NewQSOSaved(DXQSO newQso)
-        {
-            if (InvokeRequired)
-            {
-                newQsoSaved d = new newQsoSaved(mainForm_NewQSOSaved);
-                Invoke(d, new object[] { newQso });
-                return;
-            }
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("New QSO is saved."); 
-            sb.AppendLine(string.Format("QSO time: {0}", newQso.QSOTime.ToString("dd.MM.yyyy HH:mm:ss")));
-            sb.AppendLine(string.Format("Call worked: {0}", newQso.Callsign));
-            sb.AppendLine();
-            sb.AppendLine(string.Format("Your current score is: {0} points!", _cdata.GetFinalScore().ToString("### ### ##0")));
-            //lbInfo.Text = sb.ToString();
-        }
-
-        private void ResetSerialPort()
-        {
         }
 
         private void UpdateRadio()
+        {
+            UpdateRadio(1);
+        }
+
+        private void UpdateRadio(int radionumber)
         {
             currentMHz = newMHz;
             currentMode = newMode;
