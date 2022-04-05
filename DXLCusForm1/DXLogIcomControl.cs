@@ -211,8 +211,8 @@ namespace DXLog.net
                 BandModeButton.ForeColor = ActiveColor;
 
                 // Allow entry in edge text boxes 
-                LowerEdgeTextbox.Enabled= true;
-                UpperEdgeTextbox.Enabled = true;
+                //LowerEdgeTextbox.Enabled= true;
+                //UpperEdgeTextbox.Enabled = true;
 
                 // Update UI and waterfall edges and ref level in radio 
                 UpdateRadioEdges(currentLowerEdge, currentUpperEdge, RadioEdgeSet[currentMHz]);
@@ -220,16 +220,16 @@ namespace DXLog.net
                 UpdateRadioPwrlevel(currentPwrLevel);
 
                 // Update band/mode display in UI
-                BandLabel.Text = bandName[newMHz];
-                BandLabel.ForeColor= BandModeColor;
-                ModeLabel.Text = newMode;
-                ModeLabel.ForeColor = BandModeColor;
+                //BandLabel.Text = bandName[newMHz];
+                //BandLabel.ForeColor= BandModeColor;
+                //ModeLabel.Text = newMode;
+                //ModeLabel.ForeColor = BandModeColor;
 
                 // Enable UI components
                 ZoomButton.Enabled = true;
                 BandModeButton.Enabled= true;
-                LowerEdgeTextbox.Enabled= true;
-                UpperEdgeTextbox.Enabled = true;
+                //LowerEdgeTextbox.Enabled= true;
+                //UpperEdgeTextbox.Enabled = true;
                 RefLevelSlider.Enabled = true;
                 PwrLevelSlider.Enabled = true;
                 PwrLevelLabel.Enabled = true;
@@ -251,8 +251,8 @@ namespace DXLog.net
 
                 try // Parse and ignore input if there are parsing errors
                 {
-                    lower = int.Parse(LowerEdgeTextbox.Text);
-                    upper = int.Parse(UpperEdgeTextbox.Text);
+                    //lower = int.Parse(LowerEdgeTextbox.Text);
+                    //upper = int.Parse(UpperEdgeTextbox.Text);
                 }
                 catch
                 {
@@ -260,8 +260,8 @@ namespace DXLog.net
                 }
 
                 // We have a successful parse, assign values
-                currentLowerEdge = lower;
-                currentUpperEdge = upper;
+                //currentLowerEdge = lower;
+                //currentUpperEdge = upper;
 
                 switch (currentMode)
                 {
@@ -286,14 +286,14 @@ namespace DXLog.net
                 UpdateRadioReflevel(currentRefLevel);
 
                 // Toggle focus betwen the two entry text boxes
-                if (sender == LowerEdgeTextbox)
-                {
-                    UpperEdgeTextbox.Focus();
-                }
-                else
-                {
-                    LowerEdgeTextbox.Focus();
-                }
+                //if (sender == LowerEdgeTextbox)
+                //{
+                //    UpperEdgeTextbox.Focus();
+                //}
+                //else
+                //{
+                //    LowerEdgeTextbox.Focus();
+                //}
             }
         }
         //private void BandModeButton_Click(object sender, EventArgs e)
@@ -334,8 +334,8 @@ namespace DXLog.net
             UpdateRadioReflevel(currentRefLevel);
 
             Zoomed = false;
-            LowerEdgeTextbox.Enabled = true;
-            UpperEdgeTextbox.Enabled = true;
+            //LowerEdgeTextbox.Enabled = true;
+            //UpperEdgeTextbox.Enabled = true;
 
             ZoomButton.BackColor = PassiveColor;
             ZoomButton.ForeColor = PassiveColor;
@@ -405,8 +405,8 @@ namespace DXLog.net
                 BandModeButton.ForeColor= PassiveColor;
 
                 // Disable text boxes for entry in zoomed mode
-                LowerEdgeTextbox.Enabled = false;
-                UpperEdgeTextbox.Enabled = false;
+                //LowerEdgeTextbox.Enabled = false;
+                //UpperEdgeTextbox.Enabled = false;
 
                 // Update radio and and UI 
                 UpdateRadioEdges(currentLowerEdge, currentUpperEdge, RadioEdgeSet[currentMHz]);
@@ -590,11 +590,11 @@ namespace DXLog.net
             };
 
             // Update UI if present (this function may be called before main window is created)
-            if (LowerEdgeTextbox != null)
-            {
-                LowerEdgeTextbox.Text = lower_edge.ToString();
-                UpperEdgeTextbox.Text = upper_edge.ToString();
-            }
+            //if (LowerEdgeTextbox != null)
+            //{
+            //    LowerEdgeTextbox.Text = lower_edge.ToString();
+            //    UpperEdgeTextbox.Text = upper_edge.ToString();
+            //}
 
             // Update radio if we are not in debug mode
             if (!NoRadio)
