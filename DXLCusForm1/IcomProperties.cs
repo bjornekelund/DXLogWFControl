@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using ConfigFile;
 
@@ -12,8 +8,7 @@ namespace DXLog.net
 {
     public partial class IcomProperties : Form
     {
-        public RadioSettings Settings;
-        public int zz;
+        public RadioSettings Settings; // Why is this not accessible from DXLogIcomControl??
 
         public IcomProperties()
         {
@@ -33,13 +28,16 @@ namespace DXLog.net
                 edgeSelectionDropDown.Items.Add(i.ToString());
             }
 
+            refreshTable();
+        }
+
+        private void refreshTable()
+        {
             edgeSelectionDropDown.SelectedIndex = Settings.EdgeSet - 1;
             useScrollModeCheckBox.Checked = Settings.Scrolling;
 
             for (int i = 0; i < Settings.Bands; i++)
             {
-                //Button mbtn = (Button)(Controls.Find("btnMsg" + btn.LabelName, true)[0]);
-
                 TextBox tbcwl = (TextBox)Controls.Find(string.Format("tbcwl{0}", i), true)[0];
                 TextBox tbcwu = (TextBox)Controls.Find(string.Format("tbcwu{0}", i), true)[0];
                 TextBox tbphl = (TextBox)Controls.Find(string.Format("tbphl{0}", i), true)[0];
@@ -58,26 +56,22 @@ namespace DXLog.net
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            Config.Save("WaterfallEdgeSet", edgeSelectionDropDown.SelectedIndex + 1);
-            Config.Save("WaterfallScrolling", useScrollModeCheckBox.Checked);
-
             try
             {
                 for (int i = 0; i < Settings.Bands; i++)
                 {
-                    //Button mbtn = (Button)(Controls.Find("btnMsg" + btn.LabelName, true)[0]);
-
                     TextBox tbcwl = (TextBox)Controls.Find(string.Format("tbcwl{0}", i), true)[0];
                     TextBox tbcwu = (TextBox)Controls.Find(string.Format("tbcwu{0}", i), true)[0];
-                    TextBox tbphl = (TextBox)Controls.Find(string.Format("tbphl{0}", i), true)[0];
-                    TextBox tbphu = (TextBox)Controls.Find(string.Format("tbphu{0}", i), true)[0];
-                    TextBox tbdgl = (TextBox)Controls.Find(string.Format("tbdgl{0}", i), true)[0];
-                    TextBox tbdgu = (TextBox)Controls.Find(string.Format("tbdgu{0}", i), true)[0];
-
                     Settings.LowerEdgeCW[i] = int.Parse(tbcwl.Text);
                     Settings.UpperEdgeCW[i] = int.Parse(tbcwu.Text);
+
+                    TextBox tbphl = (TextBox)Controls.Find(string.Format("tbphl{0}", i), true)[0];
+                    TextBox tbphu = (TextBox)Controls.Find(string.Format("tbphu{0}", i), true)[0];
                     Settings.LowerEdgePhone[i] = int.Parse(tbphl.Text);
                     Settings.UpperEdgePhone[i] = int.Parse(tbphu.Text);
+
+                    TextBox tbdgl = (TextBox)Controls.Find(string.Format("tbdgl{0}", i), true)[0];
+                    TextBox tbdgu = (TextBox)Controls.Find(string.Format("tbdgu{0}", i), true)[0];
                     Settings.LowerEdgeDigital[i] = int.Parse(tbdgl.Text);
                     Settings.UpperEdgeDigital[i] = int.Parse(tbdgu.Text);
                 }
@@ -88,27 +82,15 @@ namespace DXLog.net
                 return;
             }
 
-            //int count = 11;
-            //for (int i = 0; i <= count; i++)
-            //{
-            //    TextBox textbox = (TextBox)Controls.Find(string.Format("tbox{0}", i), false).FirstOrDefault();
-            //    string s = textbox.Text;
-            //}
+            Config.Save("WaterfallEdgeSet", edgeSelectionDropDown.SelectedIndex + 1);
+            Config.Save("WaterfallScrolling", useScrollModeCheckBox.Checked);
 
             Config.Save("WaterfallLowerEdgeCW", string.Join(";", Settings.LowerEdgeCW.Select(i => i.ToString()).ToArray()));
             Config.Save("WaterfallUpperEdgeCW", string.Join(";", Settings.UpperEdgeCW.Select(i => i.ToString()).ToArray()));
-            Config.Save("WaterfallRefCW", string.Join(";", Settings.RefLevelCW.Select(i => i.ToString()).ToArray()));
-            Config.Save("TransmitPowerCW", string.Join(";", Settings.PwrLevelCW.Select(i => i.ToString()).ToArray()));
-
             Config.Save("WaterfallLowerEdgePhone", string.Join(";", Settings.LowerEdgePhone.Select(i => i.ToString()).ToArray()));
             Config.Save("WaterfallUpperEdgePhone", string.Join(";", Settings.UpperEdgePhone.Select(i => i.ToString()).ToArray()));
-            Config.Save("WaterfallRefPhone", string.Join(";", Settings.RefLevelPhone.Select(i => i.ToString()).ToArray()));
-            Config.Save("TransmitPowerPhone", string.Join(";", Settings.PwrLevelPhone.Select(i => i.ToString()).ToArray()));
-
             Config.Save("WaterfallLowerEdgeDigital", string.Join(";", Settings.LowerEdgeDigital.Select(i => i.ToString()).ToArray()));
             Config.Save("WaterfallUpperEdgeDigital", string.Join(";", Settings.UpperEdgeDigital.Select(i => i.ToString()).ToArray()));
-            Config.Save("WaterfallRefDigital", string.Join(";", Settings.RefLevelDigital.Select(i => i.ToString()).ToArray()));
-            Config.Save("TransmitPowerDigital", string.Join(";", Settings.PwrLevelDigital.Select(i => i.ToString()).ToArray()));
 
             DialogResult = DialogResult.OK;
             Close();
@@ -120,9 +102,26 @@ namespace DXLog.net
             Close();
         }
 
-        private void edgeSelectionDropDown_SelectedValueChanged(object sender, EventArgs e)
+        private void btnDefaults_Click(object sender, EventArgs e)
         {
+            DefaultRadioSettings def = new DefaultRadioSettings();
 
+            Settings.LowerEdgeCW = def.LowerEdgeCW.Split(';').Select(s => int.Parse(s)).ToArray();
+            Settings.UpperEdgeCW = def.UpperEdgeCW.Split(';').Select(s => int.Parse(s)).ToArray();
+            Settings.RefLevelCW = def.RefLevelCW.Split(';').Select(s => int.Parse(s)).ToArray();
+            Settings.PwrLevelCW = def.PwrLevelCW.Split(';').Select(s => int.Parse(s)).ToArray();
+
+            Settings.LowerEdgePhone = def.LowerEdgePhone.Split(';').Select(s => int.Parse(s)).ToArray();
+            Settings.UpperEdgePhone = def.UpperEdgePhone.Split(';').Select(s => int.Parse(s)).ToArray();
+            Settings.RefLevelPhone = def.RefLevelPhone.Split(';').Select(s => int.Parse(s)).ToArray();
+            Settings.PwrLevelPhone = def.PwrLevelPhone.Split(';').Select(s => int.Parse(s)).ToArray();
+
+            Settings.LowerEdgeDigital = def.LowerEdgeDigital.Split(';').Select(s => int.Parse(s)).ToArray();
+            Settings.UpperEdgeDigital = def.UpperEdgeDigital.Split(';').Select(s => int.Parse(s)).ToArray();
+            Settings.RefLevelDigital = def.RefLevelDigital.Split(';').Select(s => int.Parse(s)).ToArray();
+            Settings.PwrLevelDigital = def.PwrLevelDigital.Split(';').Select(s => int.Parse(s)).ToArray();
+
+            refreshTable();
         }
     }
 }

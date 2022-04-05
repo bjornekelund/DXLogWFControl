@@ -135,6 +135,7 @@ namespace DXLog.net
             this.tbcwu11 = new System.Windows.Forms.TextBox();
             this.tbdgu13 = new System.Windows.Forms.TextBox();
             this.tbdgl13 = new System.Windows.Forms.TextBox();
+            this.btnDefaults = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -143,21 +144,20 @@ namespace DXLog.net
             // useScrollModeCheckBox
             // 
             this.useScrollModeCheckBox.AutoSize = true;
-            this.useScrollModeCheckBox.Location = new System.Drawing.Point(198, 406);
+            this.useScrollModeCheckBox.Location = new System.Drawing.Point(126, 409);
             this.useScrollModeCheckBox.Name = "useScrollModeCheckBox";
             this.useScrollModeCheckBox.Size = new System.Drawing.Size(108, 17);
-            this.useScrollModeCheckBox.TabIndex = 0;
+            this.useScrollModeCheckBox.TabIndex = 88;
             this.useScrollModeCheckBox.Text = "Scrolling waterfall";
             this.useScrollModeCheckBox.UseVisualStyleBackColor = true;
             // 
             // edgeSelectionDropDown
             // 
             this.edgeSelectionDropDown.FormattingEnabled = true;
-            this.edgeSelectionDropDown.Location = new System.Drawing.Point(126, 403);
+            this.edgeSelectionDropDown.Location = new System.Drawing.Point(77, 407);
             this.edgeSelectionDropDown.Name = "edgeSelectionDropDown";
-            this.edgeSelectionDropDown.Size = new System.Drawing.Size(52, 21);
-            this.edgeSelectionDropDown.TabIndex = 1;
-            this.edgeSelectionDropDown.SelectedValueChanged += new System.EventHandler(this.edgeSelectionDropDown_SelectedValueChanged);
+            this.edgeSelectionDropDown.Size = new System.Drawing.Size(40, 21);
+            this.edgeSelectionDropDown.TabIndex = 87;
             // 
             // tbcwl0
             // 
@@ -836,17 +836,18 @@ namespace DXLog.net
             this.btnOK.Location = new System.Drawing.Point(415, 406);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
-            this.btnOK.TabIndex = 44;
+            this.btnOK.TabIndex = 91;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
             // 
             // btnCancel
             // 
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Location = new System.Drawing.Point(334, 406);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 45;
+            this.btnCancel.TabIndex = 90;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -854,11 +855,11 @@ namespace DXLog.net
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(17, 406);
+            this.label12.Location = new System.Drawing.Point(17, 412);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(103, 13);
+            this.label12.Size = new System.Drawing.Size(59, 13);
             this.label12.TabIndex = 46;
-            this.label12.Text = "Waterfall edge set #";
+            this.label12.Text = "Edge set #";
             // 
             // tbcwl11
             // 
@@ -1013,11 +1014,24 @@ namespace DXLog.net
             this.tbdgl13.Size = new System.Drawing.Size(60, 20);
             this.tbdgl13.TabIndex = 85;
             // 
+            // btnDefaults
+            // 
+            this.btnDefaults.Location = new System.Drawing.Point(241, 406);
+            this.btnDefaults.Name = "btnDefaults";
+            this.btnDefaults.Size = new System.Drawing.Size(75, 23);
+            this.btnDefaults.TabIndex = 89;
+            this.btnDefaults.Text = "Defaults";
+            this.btnDefaults.UseVisualStyleBackColor = true;
+            this.btnDefaults.Click += new System.EventHandler(this.btnDefaults_Click);
+            // 
             // IcomProperties
             // 
+            this.AcceptButton = this.btnOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(505, 436);
+            this.Controls.Add(this.btnDefaults);
             this.Controls.Add(this.label15);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.label13);
@@ -1046,7 +1060,7 @@ namespace DXLog.net
             this.Name = "IcomProperties";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.Text = "ICOM control properties";
+            this.Text = "ICOM controller properties";
             this.TopMost = true;
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -1167,5 +1181,6 @@ namespace DXLog.net
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Button btnDefaults;
     }
 }

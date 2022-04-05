@@ -35,8 +35,6 @@
             this.PwrLevelLabel = new System.Windows.Forms.Label();
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.bandlabel = new System.Windows.Forms.Label();
-            this.modelabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.RefLevelSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PwrLevelSlider)).BeginInit();
             this.contextMenuStrip2.SuspendLayout();
@@ -47,14 +45,14 @@
             this.RefLevelLabel.AutoSize = true;
             this.RefLevelLabel.Location = new System.Drawing.Point(4, 12);
             this.RefLevelLabel.Name = "RefLevelLabel";
-            this.RefLevelLabel.Size = new System.Drawing.Size(52, 13);
+            this.RefLevelLabel.Size = new System.Drawing.Size(49, 13);
             this.RefLevelLabel.TabIndex = 1;
-            this.RefLevelLabel.Text = "Ref: ---dB";
+            this.RefLevelLabel.Text = "Ref: --dB";
             // 
             // RefLevelSlider
             // 
             this.RefLevelSlider.LargeChange = 2;
-            this.RefLevelSlider.Location = new System.Drawing.Point(58, 12);
+            this.RefLevelSlider.Location = new System.Drawing.Point(61, 12);
             this.RefLevelSlider.Minimum = -20;
             this.RefLevelSlider.Name = "RefLevelSlider";
             this.RefLevelSlider.Size = new System.Drawing.Size(116, 45);
@@ -64,7 +62,7 @@
             // PwrLevelSlider
             // 
             this.PwrLevelSlider.LargeChange = 2;
-            this.PwrLevelSlider.Location = new System.Drawing.Point(58, 43);
+            this.PwrLevelSlider.Location = new System.Drawing.Point(61, 43);
             this.PwrLevelSlider.Maximum = 100;
             this.PwrLevelSlider.Name = "PwrLevelSlider";
             this.PwrLevelSlider.Size = new System.Drawing.Size(116, 45);
@@ -94,32 +92,12 @@
             this.propertiesToolStripMenuItem.Text = "Properties";
             this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.propertiesToolStripMenuItem_Click);
             // 
-            // bandlabel
-            // 
-            this.bandlabel.AutoSize = true;
-            this.bandlabel.Location = new System.Drawing.Point(199, 20);
-            this.bandlabel.Name = "bandlabel";
-            this.bandlabel.Size = new System.Drawing.Size(35, 13);
-            this.bandlabel.TabIndex = 5;
-            this.bandlabel.Text = "label1";
-            // 
-            // modelabel
-            // 
-            this.modelabel.AutoSize = true;
-            this.modelabel.Location = new System.Drawing.Point(206, 51);
-            this.modelabel.Name = "modelabel";
-            this.modelabel.Size = new System.Drawing.Size(35, 13);
-            this.modelabel.TabIndex = 6;
-            this.modelabel.Text = "label2";
-            // 
             // DXLogIcomControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(264, 81);
+            this.ClientSize = new System.Drawing.Size(185, 81);
             this.ContextMenuStrip = this.contextMenuStrip2;
-            this.Controls.Add(this.modelabel);
-            this.Controls.Add(this.bandlabel);
             this.Controls.Add(this.PwrLevelLabel);
             this.Controls.Add(this.PwrLevelSlider);
             this.Controls.Add(this.RefLevelSlider);
@@ -146,7 +124,5 @@
         private System.Windows.Forms.Label PwrLevelLabel;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
         private System.Windows.Forms.ToolStripMenuItem propertiesToolStripMenuItem;
-        private System.Windows.Forms.Label bandlabel;
-        private System.Windows.Forms.Label modelabel;
     }
 }
