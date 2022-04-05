@@ -89,24 +89,27 @@ namespace DXLog.net
             13, 13, 13, 13 };
 
         // Per mode/band waterfall edges and ref levels.
-        private int[] lowerEdgeCW = new int[HamBands];
-        private int[] upperEdgeCW = new int[HamBands];
-        private int[] refLevelCW = new int[HamBands];
-        private int[] lowerEdgePhone = new int[HamBands];
-        private int[] upperEdgePhone = new int[HamBands];
-        private int[] refLevelPhone = new int[HamBands];
-        private int[] lowerEdgeDigital = new int[HamBands];
-        private int[] upperEdgeDigital = new int[HamBands];
-        private int[] refLevelDigital = new int[HamBands];
-        private int[] pwrLevelCW = new int[HamBands];
-        private int[] pwrLevelPhone = new int[HamBands];
-        private int[] pwrLevelDigital = new int[HamBands];
+        //private int[] lowerEdgeCW = new int[HamBands];
+        //private int[] upperEdgeCW = new int[HamBands];
+        //private int[] refLevelCW = new int[HamBands];
+        //private int[] lowerEdgePhone = new int[HamBands];
+        //private int[] upperEdgePhone = new int[HamBands];
+        //private int[] refLevelPhone = new int[HamBands];
+        //private int[] lowerEdgeDigital = new int[HamBands];
+        //private int[] upperEdgeDigital = new int[HamBands];
+        //private int[] refLevelDigital = new int[HamBands];
+        //private int[] pwrLevelCW = new int[HamBands];
+        //private int[] pwrLevelPhone = new int[HamBands];
+        //private int[] pwrLevelDigital = new int[HamBands];
 
         // Global variables
         private int currentLowerEdge, currentUpperEdge, currentRefLevel, currentPwrLevel;
         private int currentFrequency = 0, newMHz, currentMHz = 0;
         private string currentMode = string.Empty, newMode = string.Empty;
         private bool Barefoot;
+
+        Settings set = new Settings();
+        DefaultSettings def = new DefaultSettings();
 
         private byte CIVaddress = 0x94;
         private bool UseScrollMode = true;
@@ -123,7 +126,7 @@ namespace DXLog.net
             _cdata = cdata;
             //FormLayoutChangeEvent += new FormLayoutChange(handle_FormLayoutChangeEvent);
 
-            string message;
+            //string message;
             string[] commandLineArguments = Environment.GetCommandLineArgs();
 
             while (contextMenuStrip1.Items.Count > 0)
@@ -164,27 +167,40 @@ namespace DXLog.net
                 RadioEdgeSet[MHz] = 17;
             }
 
-            // Fetch lower and upper edges and ref levels from last time, ugly solution due to limitations in WPF settings management
-            //lowerEdgeCW = Properties.Settings.Default.LowerEdgesCW.Split(';').Select(s => int.Parse(s)).ToArray();
-            //upperEdgeCW = Properties.Settings.Default.UpperEdgesCW.Split(';').Select(s => int.Parse(s)).ToArray();
-            //refLevelCW = Properties.Settings.Default.RefLevelsCW.Split(';').Select(s => int.Parse(s)).ToArray();
-            //pwrLevelCW = Properties.Settings.Default.PwrLevelsCW.Split(';').Select(s => int.Parse(s)).ToArray();
+            try
+            {
+                set.lowerEdgeCW = Config.Read("WaterfallLowerEdgeCW", def.LowerEdgeCW).Split(';').Select(s => int.Parse(s)).ToArray();
+                set.upperEdgeCW = Config.Read("WaterfallUpperEdgeCW", def.UpperEdgeCW).Split(';').Select(s => int.Parse(s)).ToArray();
+                set.refLevelCW = Config.Read("WaterfallRefCW", def.RefLevelCW).Split(';').Select(s => int.Parse(s)).ToArray();
+                set.pwrLevelCW = Config.Read("TransmitPowerCW", def.PwrLevelCW).Split(';').Select(s => int.Parse(s)).ToArray();
 
-            //lowerEdgePhone = Properties.Settings.Default.LowerEdgesPhone.Split(';').Select(s => int.Parse(s)).ToArray();
-            //upperEdgePhone = Properties.Settings.Default.UpperEdgesPhone.Split(';').Select(s => int.Parse(s)).ToArray();
-            //refLevelPhone = Properties.Settings.Default.RefLevelsPhone.Split(';').Select(s => int.Parse(s)).ToArray();
-            //pwrLevelPhone = Properties.Settings.Default.PwrLevelsPhone.Split(';').Select(s => int.Parse(s)).ToArray();
+                set.lowerEdgePhone = Config.Read("WaterfallLowerEdgePhone", def.LowerEdgePhone).Split(';').Select(s => int.Parse(s)).ToArray();
+                set.upperEdgePhone = Config.Read("WaterfallUpperEdgePhone", def.UpperEdgePhone).Split(';').Select(s => int.Parse(s)).ToArray();
+                set.refLevelPhone = Config.Read("WaterfallRefPhone", def.RefLevelPhone).Split(';').Select(s => int.Parse(s)).ToArray();
+                set.pwrLevelPhone = Config.Read("TransmitPowerPhone", def.PwrLevelPhone).Split(';').Select(s => int.Parse(s)).ToArray();
 
-            //lowerEdgeDigital = Properties.Settings.Default.LowerEdgesDigital.Split(';').Select(s => int.Parse(s)).ToArray();
-            //upperEdgeDigital = Properties.Settings.Default.UpperEdgesDigital.Split(';').Select(s => int.Parse(s)).ToArray();
-            //refLevelDigital = Properties.Settings.Default.RefLevelsDigital.Split(';').Select(s => int.Parse(s)).ToArray();
-            //pwrLevelDigital = Properties.Settings.Default.PwrLevelsDigital.Split(';').Select(s => int.Parse(s)).ToArray();
+                set.lowerEdgeDigital = Config.Read("WaterfallLowerEdgeDigital", def.LowerEdgeDigital).Split(';').Select(s => int.Parse(s)).ToArray();
+                set.upperEdgeDigital = Config.Read("WaterfallUpperEdgeDigital", def.UpperEdgeDigital).Split(';').Select(s => int.Parse(s)).ToArray();
+                set.refLevelDigital = Config.Read("WaterfallRefDigital", def.RefLevelDigital).Split(';').Select(s => int.Parse(s)).ToArray();
+                set.pwrLevelDigital = Config.Read("TransmitPowerDigital", def.PwrLevelDigital).Split(';').Select(s => int.Parse(s)).ToArray();
+            }
+            catch
+            {
+                set.lowerEdgeCW = def.LowerEdgeCW.Split(';').Select(s => int.Parse(s)).ToArray();
+                set.upperEdgeCW = def.UpperEdgeCW.Split(';').Select(s => int.Parse(s)).ToArray();
+                set.refLevelCW = def.RefLevelCW.Split(';').Select(s => int.Parse(s)).ToArray();
+                set.pwrLevelCW = def.PwrLevelCW.Split(';').Select(s => int.Parse(s)).ToArray();
 
-            //if (lowerEdgeCW.Length != HamBands)
-            //{
-            //    Properties.Settings.Default.Reset();
-            //}
+                set.lowerEdgePhone = def.LowerEdgePhone.Split(';').Select(s => int.Parse(s)).ToArray();
+                set.upperEdgePhone = def.UpperEdgePhone.Split(';').Select(s => int.Parse(s)).ToArray();
+                set.refLevelPhone = def.RefLevelPhone.Split(';').Select(s => int.Parse(s)).ToArray();
+                set.pwrLevelPhone = def.PwrLevelPhone.Split(';').Select(s => int.Parse(s)).ToArray();
 
+                set.lowerEdgeDigital = def.LowerEdgeDigital.Split(';').Select(s => int.Parse(s)).ToArray();
+                set.upperEdgeDigital = def.UpperEdgeDigital.Split(';').Select(s => int.Parse(s)).ToArray();
+                set.refLevelDigital = def.RefLevelDigital.Split(';').Select(s => int.Parse(s)).ToArray();
+                set.pwrLevelDigital = def.PwrLevelDigital.Split(';').Select(s => int.Parse(s)).ToArray();
+            }
 
             if (mainForm == null)
             {
@@ -197,13 +213,28 @@ namespace DXLog.net
                     //_cdata.FocusedRadioChanged += new ContestData.FocusedRadioChange(UpdateRadio);
                 }
             }
-
-
         }
 
         // Save all settings when closing program
         private void OnClosing(object sender, EventArgs e)
         {
+            //Config.Save("WaterfallLowerEdgeCW", string.Join(";", set.lowerEdgeCW.Select(i => i.ToString()).ToArray()));
+            //Config.Save("WaterfallUpperEdgeCW", def.UpperEdgeCW).Split(';').Select(s => int.Parse(s)).ToArray();
+            //Config.Read("WaterfallRefCW", def.RefLevelCW).Split(';').Select(s => int.Parse(s)).ToArray();
+            //Config.Read("TransmitPowerCW", def.PwrLevelCW).Split(';').Select(s => int.Parse(s)).ToArray();
+
+            //Config.Read("WaterfallLowerEdgePhone", def.LowerEdgePhone).Split(';').Select(s => int.Parse(s)).ToArray();
+            //Config.Read("WaterfallUpperEdgePhone", def.UpperEdgePhone).Split(';').Select(s => int.Parse(s)).ToArray();
+            //Config.Read("WaterfallRefPhone", def.RefLevelPhone).Split(';').Select(s => int.Parse(s)).ToArray();
+            //Config.Read("TransmitPowerPhone", def.PwrLevelPhone).Split(';').Select(s => int.Parse(s)).ToArray();
+
+            //Config.Read("WaterfallLowerEdgeDigital", def.LowerEdgeDigital).Split(';').Select(s => int.Parse(s)).ToArray();
+            //Config.Read("WaterfallUpperEdgeDigital", def.UpperEdgeDigital).Split(';').Select(s => int.Parse(s)).ToArray();
+            //Config.Read("WaterfallRefDigital", def.RefLevelDigital).Split(';').Select(s => int.Parse(s)).ToArray();
+            //Config.Read("TransmitPowerDigital", def.PwrLevelDigital).Split(';').Select(s => int.Parse(s)).ToArray();
+
+
+
             // Remember window location 
             //Properties.Settings.Default.Top = Top;
             //Properties.Settings.Default.Left = Left;
@@ -233,15 +264,6 @@ namespace DXLog.net
             mainForm.scheduler.Second -= UpdateRadio;
         }
 
-        //private void DXLogIcomControl_FormClosing(object sender, FormClosingEventArgs e)
-        //{
-        //}
-
-        //private void handle_FormLayoutChangeEvent()
-        //{
-        //    InitializeLayout();
-        //}
-
         public override void InitializeLayout()
         {
             //InitializeLayout(_windowFont);
@@ -265,22 +287,22 @@ namespace DXLog.net
             switch (currentMode)
             {
                 case "CW":
-                    currentLowerEdge = lowerEdgeCW[bandIndex[currentMHz]];
-                    currentUpperEdge = upperEdgeCW[bandIndex[currentMHz]];
-                    currentRefLevel = refLevelCW[bandIndex[currentMHz]];
-                    currentPwrLevel = pwrLevelCW[bandIndex[currentMHz]];
+                    currentLowerEdge = set.lowerEdgeCW[bandIndex[currentMHz]];
+                    currentUpperEdge = set.upperEdgeCW[bandIndex[currentMHz]];
+                    currentRefLevel = set.refLevelCW[bandIndex[currentMHz]];
+                    currentPwrLevel = set.pwrLevelCW[bandIndex[currentMHz]];
                     break;
                 case "Phone":
-                    currentLowerEdge = lowerEdgePhone[bandIndex[currentMHz]];
-                    currentUpperEdge = upperEdgePhone[bandIndex[currentMHz]];
-                    currentRefLevel = refLevelPhone[bandIndex[currentMHz]];
-                    currentPwrLevel = pwrLevelPhone[bandIndex[currentMHz]];
+                    currentLowerEdge = set.lowerEdgePhone[bandIndex[currentMHz]];
+                    currentUpperEdge = set.upperEdgePhone[bandIndex[currentMHz]];
+                    currentRefLevel = set.refLevelPhone[bandIndex[currentMHz]];
+                    currentPwrLevel = set.pwrLevelPhone[bandIndex[currentMHz]];
                     break;
                 default:
-                    currentLowerEdge = lowerEdgeDigital[bandIndex[currentMHz]];
-                    currentUpperEdge = upperEdgeDigital[bandIndex[currentMHz]];
-                    currentRefLevel = refLevelDigital[bandIndex[currentMHz]];
-                    currentPwrLevel = pwrLevelDigital[bandIndex[currentMHz]];
+                    currentLowerEdge = set.lowerEdgeDigital[bandIndex[currentMHz]];
+                    currentUpperEdge = set.upperEdgeDigital[bandIndex[currentMHz]];
+                    currentRefLevel = set.refLevelDigital[bandIndex[currentMHz]];
+                    currentPwrLevel = set.pwrLevelDigital[bandIndex[currentMHz]];
                     break;
             }
 
@@ -289,126 +311,83 @@ namespace DXLog.net
             //{
                 // Highlight band-mode button and exit Zoomed mode if active
 
-                // Allow entry in edge text boxes 
-                //LowerEdgeTextbox.Enabled= true;
-                //UpperEdgeTextbox.Enabled = true;
-
                 // Update UI and waterfall edges and ref level in radio 
                 UpdateRadioEdges(currentLowerEdge, currentUpperEdge, RadioEdgeSet[currentMHz]);
                 UpdateRadioReflevel(currentRefLevel);
                 UpdateRadioPwrlevel(currentPwrLevel);
-
-                // Update band/mode display in UI
-                //BandLabel.Text = bandName[newMHz];
-                //BandLabel.ForeColor= BandModeColor;
-                //ModeLabel.Text = newMode;
-                //ModeLabel.ForeColor = BandModeColor;
-
-                // Enable UI components
-                //ZoomButton.Enabled = true;
-                //BandModeButton.Enabled= true;
-                //LowerEdgeTextbox.Enabled= true;
-                //UpperEdgeTextbox.Enabled = true;
-                //RefLevelSlider.Enabled = true;
-                //PwrLevelSlider.Enabled = true;
-                //PwrLevelLabel.Enabled = true;
             //}));
         }
 
-        // On hitting a key in upper and lower edge text boxes
-        private void OnEdgeTextboxKeydown(object sender, KeyEventArgs e)
-        {
-            int lower, upper;
-
-            if (e.KeyData == Keys.Return) // Only parse input when ENTER is hit 
-            {
-
-                try // Parse and ignore input if there are parsing errors
-                {
-                    //lower = int.Parse(LowerEdgeTextbox.Text);
-                    //upper = int.Parse(UpperEdgeTextbox.Text);
-                }
-                catch
-                {
-                    return; // Ignore input if parsing failed
-                }
-
-                // We have a successful parse, assign values
-                //currentLowerEdge = lower;
-                //currentUpperEdge = upper;
-
-                switch (currentMode)
-                {
-                    case "CW":
-                        lowerEdgeCW[bandIndex[currentMHz]] = currentLowerEdge;
-                        upperEdgeCW[bandIndex[currentMHz]] = currentUpperEdge;
-                        currentRefLevel = refLevelCW[bandIndex[currentMHz]];
-                        break;
-                    case "Phone":
-                        lowerEdgePhone[bandIndex[currentMHz]] = currentLowerEdge;
-                        upperEdgePhone[bandIndex[currentMHz]] = currentUpperEdge;
-                        currentRefLevel = refLevelPhone[bandIndex[currentMHz]];
-                        break;
-                    default:
-                        lowerEdgeDigital[bandIndex[currentMHz]] = currentLowerEdge;
-                        upperEdgeDigital[bandIndex[currentMHz]] = currentUpperEdge;
-                        currentRefLevel = refLevelDigital[bandIndex[currentMHz]];
-                        break;
-                }
-
-                UpdateRadioEdges(currentLowerEdge, currentUpperEdge, RadioEdgeSet[currentMHz]);
-                UpdateRadioReflevel(currentRefLevel);
-
-                // Toggle focus betwen the two entry text boxes
-                //if (sender == LowerEdgeTextbox)
-                //{
-                //    UpperEdgeTextbox.Focus();
-                //}
-                //else
-                //{
-                //    LowerEdgeTextbox.Focus();
-                //}
-            }
-        }
-        //private void BandModeButton_Click(object sender, EventArgs e)
+        //// On hitting a key in upper and lower edge text boxes
+        //private void OnEdgeTextboxKeydown(object sender, KeyEventArgs e)
         //{
+        //    int lower, upper;
 
+        //    if (e.KeyData == Keys.Return) // Only parse input when ENTER is hit 
+        //    {
+
+        //        try // Parse and ignore input if there are parsing errors
+        //        {
+        //            //lower = int.Parse(LowerEdgeTextbox.Text);
+        //            //upper = int.Parse(UpperEdgeTextbox.Text);
+        //        }
+        //        catch
+        //        {
+        //            return; // Ignore input if parsing failed
+        //        }
+
+
+        //        switch (currentMode)
+        //        {
+        //            case "CW":
+        //                lowerEdgeCW[bandIndex[currentMHz]] = currentLowerEdge;
+        //                upperEdgeCW[bandIndex[currentMHz]] = currentUpperEdge;
+        //                currentRefLevel = refLevelCW[bandIndex[currentMHz]];
+        //                break;
+        //            case "Phone":
+        //                lowerEdgePhone[bandIndex[currentMHz]] = currentLowerEdge;
+        //                upperEdgePhone[bandIndex[currentMHz]] = currentUpperEdge;
+        //                currentRefLevel = refLevelPhone[bandIndex[currentMHz]];
+        //                break;
+        //            default:
+        //                lowerEdgeDigital[bandIndex[currentMHz]] = currentLowerEdge;
+        //                upperEdgeDigital[bandIndex[currentMHz]] = currentUpperEdge;
+        //                currentRefLevel = refLevelDigital[bandIndex[currentMHz]];
+        //                break;
+        //        }
+
+        //        UpdateRadioEdges(currentLowerEdge, currentUpperEdge, RadioEdgeSet[currentMHz]);
+        //        UpdateRadioReflevel(currentRefLevel);
+
+        //    }
         //}
 
-        // On band-mode button clicked
-        private void OnBandModeButton(object sender, EventArgs e)
-        {
-            switch (currentMode)
-            {
-                case "CW":
-                    currentLowerEdge = lowerEdgeCW[bandIndex[currentMHz]];
-                    currentUpperEdge = upperEdgeCW[bandIndex[currentMHz]];
-                    currentRefLevel = refLevelCW[bandIndex[currentMHz]];
-                    break;
-                case "Phone":
-                    currentLowerEdge = lowerEdgePhone[bandIndex[currentMHz]];
-                    currentUpperEdge = upperEdgePhone[bandIndex[currentMHz]];
-                    currentRefLevel = refLevelPhone[bandIndex[currentMHz]];
-                    break;
-                default: // All other modes = Digital 
-                    currentLowerEdge = lowerEdgeDigital[bandIndex[currentMHz]];
-                    currentUpperEdge = upperEdgeDigital[bandIndex[currentMHz]];
-                    currentRefLevel = refLevelDigital[bandIndex[currentMHz]];
-                    break;
-            }
+        //// On band-mode button clicked
+        //private void OnBandModeButton(object sender, EventArgs e)
+        //{
+        //    switch (currentMode)
+        //    {
+        //        case "CW":
+        //            currentLowerEdge = set.lowerEdgeCW[bandIndex[currentMHz]];
+        //            currentUpperEdge = set.upperEdgeCW[bandIndex[currentMHz]];
+        //            currentRefLevel = set.refLevelCW[bandIndex[currentMHz]];
+        //            break;
+        //        case "Phone":
+        //            currentLowerEdge = set.lowerEdgePhone[bandIndex[currentMHz]];
+        //            currentUpperEdge = set.upperEdgePhone[bandIndex[currentMHz]];
+        //            currentRefLevel = set.refLevelPhone[bandIndex[currentMHz]];
+        //            break;
+        //        default: // All other modes = Digital 
+        //            currentLowerEdge = lowerEdgeDigital[bandIndex[currentMHz]];
+        //            currentUpperEdge = upperEdgeDigital[bandIndex[currentMHz]];
+        //            currentRefLevel = refLevelDigital[bandIndex[currentMHz]];
+        //            break;
+        //    }
 
-            UpdateRadioEdges(currentLowerEdge, currentUpperEdge, RadioEdgeSet[currentMHz]);
+        //    UpdateRadioEdges(currentLowerEdge, currentUpperEdge, RadioEdgeSet[currentMHz]);
 
-            UpdateRadioReflevel(currentRefLevel);
-
-            //LowerEdgeTextbox.Enabled = true;
-            //UpperEdgeTextbox.Enabled = true;
-
-            //ZoomButton.BackColor = PassiveColor;
-            //ZoomButton.ForeColor = PassiveColor;
-            //BandModeButton.BackColor= ActiveColor;
-            //BandModeButton.ForeColor = ActiveColor;
-        }
+        //    UpdateRadioReflevel(currentRefLevel);
+        //}
 
         // On arrow key modification of slider
         private void OnRefSliderKey(object sender, KeyEventArgs e)
@@ -418,7 +397,7 @@ namespace DXLog.net
 
         private void propertiesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form prop = new IcomProperties();
+            Form prop = new IcomProperties(set);
 
             if (prop.ShowDialog() == DialogResult.OK)
             {
@@ -453,13 +432,13 @@ namespace DXLog.net
             switch (currentMode)
             {
                 case "CW":
-                    refLevelCW[bandIndex[currentMHz]] = currentRefLevel;
+                    set.refLevelCW[bandIndex[currentMHz]] = currentRefLevel;
                     break;
                 case "Phone":
-                    refLevelPhone[bandIndex[currentMHz]] = currentRefLevel;
+                    set.refLevelPhone[bandIndex[currentMHz]] = currentRefLevel;
                     break;
                 default:
-                    refLevelDigital[bandIndex[currentMHz]] = currentRefLevel;
+                    set.refLevelDigital[bandIndex[currentMHz]] = currentRefLevel;
                     break;
             }
         }
@@ -481,13 +460,13 @@ namespace DXLog.net
                 switch (currentMode)
                 {
                     case "CW":
-                        pwrLevelCW[bandIndex[currentMHz]] = currentPwrLevel;
+                        set.pwrLevelCW[bandIndex[currentMHz]] = currentPwrLevel;
                         break;
                     case "Phone":
-                        pwrLevelPhone[bandIndex[currentMHz]] = currentPwrLevel;
+                        set.pwrLevelPhone[bandIndex[currentMHz]] = currentPwrLevel;
                         break;
                     default:
-                        pwrLevelDigital[bandIndex[currentMHz]] = currentPwrLevel;
+                        set.pwrLevelDigital[bandIndex[currentMHz]] = currentPwrLevel;
                         break;
                 }
             }
@@ -604,7 +583,8 @@ namespace DXLog.net
             }
         }
     }
-    public class DefaultValues
+
+    public class DefaultSettings
     {
         public string LowerEdgeCW = "1810;3500;5352;7000;10100;14000;18068;21000;24890;28000;50000;70000;144000;432000";
         public string UpperEdgeCW = "1840;3570;5366;7040;10130;14070;18109;21070;24920;28070;50150;71000;144100;432100";
@@ -623,5 +603,23 @@ namespace DXLog.net
 
         public int EdgeSet = 4;
         public bool UseScrolling = true;
+    }
+
+    public class Settings
+    {
+        private const int HamBands = 14;
+
+        public int[] lowerEdgeCW = new int[HamBands];
+        public int[] upperEdgeCW = new int[HamBands];
+        public int[] refLevelCW = new int[HamBands];
+        public int[] lowerEdgePhone = new int[HamBands];
+        public int[] upperEdgePhone = new int[HamBands];
+        public int[] refLevelPhone = new int[HamBands];
+        public int[] lowerEdgeDigital = new int[HamBands];
+        public int[] upperEdgeDigital = new int[HamBands];
+        public int[] refLevelDigital = new int[HamBands];
+        public int[] pwrLevelCW = new int[HamBands];
+        public int[] pwrLevelPhone = new int[HamBands];
+        public int[] pwrLevelDigital = new int[HamBands];
     }
 }

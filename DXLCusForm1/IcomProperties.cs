@@ -12,18 +12,22 @@ namespace DXLog.net
 {
     public partial class IcomProperties : Form
     {
+        Settings _set;
 
-        public IcomProperties()
+        public IcomProperties(Settings sett)
         {
             InitializeComponent();
+
             DialogResult = DialogResult.Cancel;
+
+            _set = sett;
 
             for (int i = 1; i <= 4; i++)
             {
                 edgeSelectionDropDown.Items.Add(i.ToString());
             }
 
-            DefaultValues def = new DefaultValues();
+            DefaultSettings def = new DefaultSettings();
 
 
             edgeSelectionDropDown.SelectedIndex = Config.Read("ICOMedgeSet", def.EdgeSet) - 1;
@@ -41,6 +45,21 @@ namespace DXLog.net
             //    TextBox textbox = (TextBox)Controls.Find(string.Format("tbox{0}", i), false).FirstOrDefault();
             //    string s = textbox.Text;
             //}
+
+            Config.Save("WaterfallLowerEdgeCW", string.Join(";", _set.lowerEdgeCW.Select(i => i.ToString()).ToArray()));
+            Config.Save("WaterfallUpperEdgeCW", string.Join(";", _set.upperEdgeCW.Select(i => i.ToString()).ToArray()));
+            Config.Read("WaterfallRefCW", string.Join(";", _set.refLevelCW.Select(i => i.ToString()).ToArray()));
+            Config.Read("TransmitPowerCW", string.Join(";", _set.pwrLevelCW.Select(i => i.ToString()).ToArray()));
+
+            Config.Read("WaterfallLowerEdgePhone", string.Join(";", _set.lowerEdgePhone.Select(i => i.ToString()).ToArray()));
+            Config.Read("WaterfallUpperEdgePhone", string.Join(";", _set.upperEdgePhone.Select(i => i.ToString()).ToArray()));
+            Config.Read("WaterfallRefPhone", string.Join(";", _set.refLevelPhone.Select(i => i.ToString()).ToArray()));
+            Config.Read("TransmitPowerPhone", string.Join(";", _set.pwrLevelPhone.Select(i => i.ToString()).ToArray()));
+
+            Config.Read("WaterfallLowerEdgeDigital", string.Join(";", _set.lowerEdgeDigital.Select(i => i.ToString()).ToArray()));
+            Config.Read("WaterfallUpperEdgeDigital", string.Join(";", _set.upperEdgeDigital.Select(i => i.ToString()).ToArray()));
+            Config.Read("WaterfallRefDigital", string.Join(";", _set.refLevelDigital.Select(i => i.ToString()).ToArray()));
+            Config.Read("TransmitPowerDigital", string.Join(";", _set.pwrLevelDigital.Select(i => i.ToString()).ToArray()));
 
             DialogResult = DialogResult.OK;
             Close();
