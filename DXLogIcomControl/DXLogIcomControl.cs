@@ -428,20 +428,20 @@ namespace DXLog.net
         public string LowerEdgeCW = "1810;3500;5352;7000;10100;14000;18068;21000;24890;28000;50000;70000;144000;432000";
         public string UpperEdgeCW = "1840;3570;5366;7040;10130;14070;18109;21070;24920;28070;50150;71000;144100;432100";
         public string RefLevelCW = "0;0;0;0;0;0;0;0;0;0;0;0;0;0";
-        public string PwrLevelCW = "18;18;18;18;18;18;18;18;18;18;18;18;18;18";
+        public string PwrLevelCW = "10;10;10;10;10;10;10;10;10;10;10;10;10;10";
 
         public string LowerEdgePhone = "1840;3600;5352;7040;10100;14100;18111;21150;24931;28300;50100;70000;144200;432200";
         public string UpperEdgePhone = "2000;3800;5366;7200;10150;14350;18168;21450;24990;28600;50500;71000;144400;432300";
         public string RefLevelPhone = "0;0;0;0;0;0;0;0;0;0;0;0;0;0";
-        public string PwrLevelPhone = "18;18;18;18;18;18;18;18;18;18;18;18;18;18";
+        public string PwrLevelPhone = "10;10;10;10;10;10;10;10;10;10;10;10;10;10";
 
         public string LowerEdgeDigital = "1840;3570;5352;7040;10130;14070;18089;21070;24910;28070;50300;70000;144000;432000";
         public string UpperEdgeDigital = "1860;3600;5366;7080;10150;14100;18109;21150;24932;28110;50350;71000;144400;432400";
         public string RefLevelDigital = "0;0;0;0;0;0;0;0;0;0;0;0;0;0";
-        public string PwrLevelDigital = "18;18;18;18;18;18;18;18;18;18;18;18;18;18";
+        public string PwrLevelDigital = "10;10;10;10;10;10;10;10;10;10;10;10;10;10";
 
         public int EdgeSet = 4;
-        public bool UseScrolling = true;
+        public bool UseScrolling = false;
     }
 
     public class RadioSettings
