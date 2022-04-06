@@ -198,6 +198,7 @@ namespace DXLog.net
 
         private void UpdateRadio(int radionumber)
         {
+            System.Threading.Thread.Sleep(100);
             CurrentMHz = (int)_cdata.Radio1_ActiveFreq / 1000;
             CurrentMode = _cdata.ActiveR1Mode;
 
@@ -229,7 +230,11 @@ namespace DXLog.net
 
             // Update UI and waterfall edges and ref level in radio 
             UpdateRadioEdges(CurrentLowerEdge, CurrentUpperEdge, RadioEdgeSet[CurrentMHz]);
+            rangeLabel.Text = string.Format("Wf: {0:N0} - {1:N0}", CurrentLowerEdge, CurrentUpperEdge);
+            System.Threading.Thread.Sleep(50);
+
             UpdateRadioReflevel(CurrentRefLevel);
+            System.Threading.Thread.Sleep(50);
             UpdateRadioPwrlevel(CurrentPwrLevel);
         }
 

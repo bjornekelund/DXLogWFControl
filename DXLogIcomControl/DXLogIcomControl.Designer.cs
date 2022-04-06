@@ -35,6 +35,7 @@
             this.PwrLevelLabel = new System.Windows.Forms.Label();
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rangeLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.RefLevelSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PwrLevelSlider)).BeginInit();
             this.contextMenuStrip2.SuspendLayout();
@@ -95,12 +96,22 @@
             this.propertiesToolStripMenuItem.Text = "Properties";
             this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.propertiesToolStripMenuItem_Click);
             // 
+            // rangeLabel
+            // 
+            this.rangeLabel.AutoSize = true;
+            this.rangeLabel.Location = new System.Drawing.Point(23, 75);
+            this.rangeLabel.Name = "rangeLabel";
+            this.rangeLabel.Size = new System.Drawing.Size(114, 13);
+            this.rangeLabel.TabIndex = 5;
+            this.rangeLabel.Text = "Wf: 432,400 - 432,600";
+            // 
             // DXLogIcomControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(178, 80);
+            this.ClientSize = new System.Drawing.Size(178, 91);
             this.ContextMenuStrip = this.contextMenuStrip2;
+            this.Controls.Add(this.rangeLabel);
             this.Controls.Add(this.PwrLevelLabel);
             this.Controls.Add(this.PwrLevelSlider);
             this.Controls.Add(this.RefLevelSlider);
@@ -127,5 +138,6 @@
         private System.Windows.Forms.Label PwrLevelLabel;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
         private System.Windows.Forms.ToolStripMenuItem propertiesToolStripMenuItem;
+        private System.Windows.Forms.Label rangeLabel;
     }
 }
