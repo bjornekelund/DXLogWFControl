@@ -122,6 +122,7 @@
             this.MinimizeBox = false;
             this.Name = "DXLogIcomControl";
             this.Text = "ICOM controller";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnClosing);
             ((System.ComponentModel.ISupportInitialize)(this.RefLevelSlider)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PwrLevelSlider)).EndInit();
             this.contextMenuStrip2.ResumeLayout(false);
