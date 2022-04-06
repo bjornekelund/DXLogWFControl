@@ -198,7 +198,7 @@ namespace DXLog.net
 
         private void UpdateRadio(int radionumber)
         {
-            System.Threading.Thread.Sleep(100);
+            //System.Threading.Thread.Sleep(100);
             CurrentMHz = (int)_cdata.Radio1_ActiveFreq / 1000;
             CurrentMode = _cdata.ActiveR1Mode;
 
@@ -230,11 +230,11 @@ namespace DXLog.net
 
             // Update UI and waterfall edges and ref level in radio 
             UpdateRadioEdges(CurrentLowerEdge, CurrentUpperEdge, RadioEdgeSet[CurrentMHz]);
-            rangeLabel.Text = string.Format("Wf: {0:N0} - {1:N0}", CurrentLowerEdge, CurrentUpperEdge);
-            System.Threading.Thread.Sleep(50);
+            rangeLabel.Text = string.Format("WF: {0:N0} - {1:N0}", CurrentLowerEdge, CurrentUpperEdge);
+            //System.Threading.Thread.Sleep(50);
 
             UpdateRadioReflevel(CurrentRefLevel);
-            System.Threading.Thread.Sleep(50);
+            //System.Threading.Thread.Sleep(50);
             UpdateRadioPwrlevel(CurrentPwrLevel);
         }
 
@@ -366,7 +366,7 @@ namespace DXLog.net
             if (RefLevelLabel != null)
             {
                 RefLevelSlider.Value = ref_level;
-                RefLevelLabel.Text = string.Format("Ref: {0:+#;-#;0}dB", ref_level);
+                RefLevelLabel.Text = string.Format("REF: {0,3:+#;-#;0}dB", ref_level);
             }
 
             int absRefLevel = (ref_level >= 0) ? ref_level : -ref_level;
@@ -390,7 +390,7 @@ namespace DXLog.net
             if (PwrLevelSlider != null)
             {
                 PwrLevelSlider.Value = pwr_level;
-                PwrLevelLabel.Text = string.Format("Pwr:{0,3}%", pwr_level);
+                PwrLevelLabel.Text = string.Format("PWR:{0,3}%", pwr_level);
             }
 
             int icomPower = (int)(255.0f * pwr_level / 100.0f + 0.99f); // Weird ICOM mapping of percent to binary

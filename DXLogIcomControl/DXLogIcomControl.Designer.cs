@@ -44,16 +44,16 @@
             // RefLevelLabel
             // 
             this.RefLevelLabel.AutoSize = true;
-            this.RefLevelLabel.Location = new System.Drawing.Point(4, 12);
+            this.RefLevelLabel.Location = new System.Drawing.Point(4, 15);
             this.RefLevelLabel.Name = "RefLevelLabel";
-            this.RefLevelLabel.Size = new System.Drawing.Size(49, 13);
+            this.RefLevelLabel.Size = new System.Drawing.Size(65, 13);
             this.RefLevelLabel.TabIndex = 1;
-            this.RefLevelLabel.Text = "Ref: --dB";
+            this.RefLevelLabel.Text = "REF: +20dB";
             // 
             // RefLevelSlider
             // 
             this.RefLevelSlider.LargeChange = 2;
-            this.RefLevelSlider.Location = new System.Drawing.Point(61, 12);
+            this.RefLevelSlider.Location = new System.Drawing.Point(68, 12);
             this.RefLevelSlider.Maximum = 20;
             this.RefLevelSlider.Minimum = -20;
             this.RefLevelSlider.Name = "RefLevelSlider";
@@ -65,7 +65,7 @@
             // PwrLevelSlider
             // 
             this.PwrLevelSlider.LargeChange = 2;
-            this.PwrLevelSlider.Location = new System.Drawing.Point(61, 43);
+            this.PwrLevelSlider.Location = new System.Drawing.Point(68, 43);
             this.PwrLevelSlider.Maximum = 100;
             this.PwrLevelSlider.Name = "PwrLevelSlider";
             this.PwrLevelSlider.Size = new System.Drawing.Size(116, 45);
@@ -76,11 +76,11 @@
             // PwrLevelLabel
             // 
             this.PwrLevelLabel.AutoSize = true;
-            this.PwrLevelLabel.Location = new System.Drawing.Point(4, 43);
+            this.PwrLevelLabel.Location = new System.Drawing.Point(4, 46);
             this.PwrLevelLabel.Name = "PwrLevelLabel";
-            this.PwrLevelLabel.Size = new System.Drawing.Size(48, 13);
+            this.PwrLevelLabel.Size = new System.Drawing.Size(65, 13);
             this.PwrLevelLabel.TabIndex = 4;
-            this.PwrLevelLabel.Text = "Pwr: ---%";
+            this.PwrLevelLabel.Text = "PWR: 100%";
             // 
             // contextMenuStrip2
             // 
@@ -99,17 +99,17 @@
             // rangeLabel
             // 
             this.rangeLabel.AutoSize = true;
-            this.rangeLabel.Location = new System.Drawing.Point(23, 75);
+            this.rangeLabel.Location = new System.Drawing.Point(32, 75);
             this.rangeLabel.Name = "rangeLabel";
-            this.rangeLabel.Size = new System.Drawing.Size(114, 13);
+            this.rangeLabel.Size = new System.Drawing.Size(117, 13);
             this.rangeLabel.TabIndex = 5;
-            this.rangeLabel.Text = "Wf: 432,400 - 432,600";
+            this.rangeLabel.Text = "WF: 432,400 - 432,600";
             // 
             // DXLogIcomControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(178, 91);
+            this.ClientSize = new System.Drawing.Size(197, 91);
             this.ContextMenuStrip = this.contextMenuStrip2;
             this.Controls.Add(this.rangeLabel);
             this.Controls.Add(this.PwrLevelLabel);
