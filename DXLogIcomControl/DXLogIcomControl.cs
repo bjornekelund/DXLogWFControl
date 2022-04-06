@@ -24,16 +24,10 @@ namespace DXLog.net
 
         private FrmMain mainForm = null;
 
-        //private readonly bool NoRadio = false; // For debugging with no radio attached
-
         // Pre-baked CI-V commands
-        //private byte[] CIVSetFixedMode = { 0xfe, 0xfe, 0xff, 0xe0, 0x27, 0x14, 0x00, 0x01, 0xfd };
-        //private byte[] CIVSetEdgeSet = { 0xfe, 0xfe, 0xff, 0xe0, 0x27, 0x16, 0x0, 0xff, 0xfd };
-        //private byte[] CIVSetRefLevel = { 0xfe, 0xfe, 0xff, 0xe0, 0x27, 0x19, 0x00, 0x00, 0x00, 0x00, 0xfd };
         private byte[] CIVSetFixedMode = { 0x27, 0x14, 0x00, 0x01 };
         private byte[] CIVSetEdgeSet = { 0x27, 0x16, 0x0, 0xff };
         private byte[] CIVSetRefLevel = { 0x27, 0x19, 0x00, 0x00, 0x00, 0x00 };
-        //private byte[] CIVSetPwrLevel = { 0xfe, 0xfe, 0xff, 0xe0, 0x14, 0x0a, 0x00, 0x00, 0xfd };
         private byte[] CIVSetPwrLevel = { 0x14, 0x0a, 0x00, 0x00};
         private const int MaxMHz = 470;
         private const int TableSize = 74;
@@ -79,7 +73,6 @@ namespace DXLog.net
         private int CurrentLowerEdge, CurrentUpperEdge, CurrentRefLevel, CurrentPwrLevel;
         private int CurrentMHz = 0;
         private string CurrentMode = string.Empty;
-        //private bool Barefoot;
 
         CATCommon Radio1 = null;
 
@@ -182,17 +175,12 @@ namespace DXLog.net
         private void OnClosing(object sender, EventArgs e)
         {
             //mainForm.scheduler.Second -= UpdateRadio;
-            _cdata.ActiveVFOChanged -= UpdateRadio;
+            //_cdata.ActiveVFOChanged -= UpdateRadio;
             _cdata.ActiveRadioBandChanged -= UpdateRadio;
         }
 
         public override void InitializeLayout()
         {
-            //InitializeLayout(_windowFont);
-            //if (FormLayout.FontName.Contains("Courier"))
-            //    _windowFont = new Font(FormLayout.FontName, FormLayout.FontSize, FontStyle.Regular);
-            //else
-            //    _windowFont = Helper.GetSpecialFont(FontStyle.Regular, FormLayout.FontSize);
             if (mainForm == null)
             {
                 mainForm = (FrmMain)(ParentForm ?? Owner);
@@ -200,7 +188,7 @@ namespace DXLog.net
                 if (mainForm != null)
                 {
                     //mainForm.scheduler.Second += UpdateRadio;
-                    _cdata.ActiveVFOChanged += new ContestData.ActiveVFOChange(UpdateRadio);
+                    //_cdata.ActiveVFOChanged += new ContestData.ActiveVFOChange(UpdateRadio);
                     _cdata.ActiveRadioBandChanged += new ContestData.ActiveRadioBandChange(UpdateRadio);
                 }
             }
@@ -253,10 +241,22 @@ namespace DXLog.net
             {
                 GetConfig();
             }
+
+            UpdateRadio(1);
+        }
+
+        private void OnRefSliderMouseClick(object sender, EventArgs e)
+        {
+            OnRefSlider();
         }
 
         // On mouse modification of slider
         private void OnRefSliderMouseClick(object sender, MouseEventArgs e)
+        {
+            OnRefSlider();
+        }
+
+        private void OnRefSlider()
         {
             CurrentRefLevel = RefLevelSlider.Value;
 
@@ -284,6 +284,16 @@ namespace DXLog.net
         // on mouse movement of power slider
         private void OnPwrSliderMouseClick(object sender, MouseEventArgs e)
         {
+            OnPwrSlider();
+        }
+
+        private void OnPwrSliderMouseClick(object sender, EventArgs e)
+        {
+            OnPwrSlider();
+        }
+
+        private void OnPwrSlider() 
+        { 
             CurrentPwrLevel = PwrLevelSlider.Value;
             UpdateRadioPwrlevel(CurrentPwrLevel);
 
@@ -330,16 +340,12 @@ namespace DXLog.net
                 (byte)(((upper_edge / 1000000) % 10) * 16 + (upper_edge / 100000) % 10) // 1GHz & 100MHz
             };
 
-            //CIVSetFixedMode[2] = Radio1.GetCIVAddress();
-            //CIVSetFixedMode[7] = (byte)(Set.Scrolling ? 0x03 : 0x01);
-            //CIVSetEdgeSet[2] = Radio1.GetCIVAddress();
-            //CIVSetEdgeSet[7] = (byte)Set.EdgeSet;
             CIVSetFixedMode[3] = (byte)(Set.Scrolling ? 0x03 : 0x01);
             CIVSetEdgeSet[3] = (byte)Set.EdgeSet;
 
-            debuglabel1.Text = BitConverter.ToString(CIVSetFixedMode).Replace("-", " ");
-            debuglabel2.Text = BitConverter.ToString(CIVSetEdgeSet).Replace("-", " ");
-            debuglabel3.Text = BitConverter.ToString(CIVSetEdges).Replace("-", " ");
+            //debuglabel1.Text = BitConverter.ToString(CIVSetFixedMode).Replace("-", " ");
+            //debuglabel2.Text = BitConverter.ToString(CIVSetEdgeSet).Replace("-", " ");
+            //debuglabel3.Text = BitConverter.ToString(CIVSetEdges).Replace("-", " ");
 
             if (Radio1 != null && Radio1.IsICOM())
             {
@@ -360,15 +366,12 @@ namespace DXLog.net
 
             int absRefLevel = (ref_level >= 0) ? ref_level : -ref_level;
 
-            //CIVSetRefLevel[2] = Radio1.GetCIVAddress();
-            //CIVSetRefLevel[7] = (byte)((absRefLevel / 10) * 16 + absRefLevel % 10);
-            //CIVSetRefLevel[9] = (ref_level >= 0) ? (byte)0 : (byte)1;
             CIVSetRefLevel[3] = (byte)((absRefLevel / 10) * 16 + absRefLevel % 10);
             CIVSetRefLevel[5] = (ref_level >= 0) ? (byte)0 : (byte)1;
 
-            debuglabel1.Text = BitConverter.ToString(CIVSetRefLevel).Replace("-", " ");
-            debuglabel2.Text = "";
-            debuglabel3.Text = "";
+            //debuglabel1.Text = BitConverter.ToString(CIVSetRefLevel).Replace("-", " ");
+            //debuglabel2.Text = "";
+            //debuglabel3.Text = "";
 
             if (Radio1 != null && Radio1.IsICOM())
             {
@@ -387,15 +390,12 @@ namespace DXLog.net
 
             int icomPower = (int)(255.0f * pwr_level / 100.0f + 0.99f); // Weird ICOM mapping of percent to binary
 
-            //CIVSetPwrLevel[2] = Radio1.GetCIVAddress();
-            //CIVSetPwrLevel[6] = (byte)((icomPower / 100) % 10);
-            //CIVSetPwrLevel[7] = (byte)((((icomPower / 10) % 10) << 4) + (icomPower % 10));
             CIVSetPwrLevel[2] = (byte)((icomPower / 100) % 10);
             CIVSetPwrLevel[3] = (byte)((((icomPower / 10) % 10) << 4) + (icomPower % 10));
 
-            debuglabel1.Text = BitConverter.ToString(CIVSetPwrLevel).Replace("-", " ");
-            debuglabel2.Text = "";
-            debuglabel3.Text = "";
+            //debuglabel1.Text = BitConverter.ToString(CIVSetPwrLevel).Replace("-", " ");
+            //debuglabel2.Text = "";
+            //debuglabel3.Text = "";
             if (Radio1 != null && Radio1.IsICOM())
             {
                 Radio1.SendCustomCommand(CIVSetPwrLevel);
