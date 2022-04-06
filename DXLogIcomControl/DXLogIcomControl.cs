@@ -27,9 +27,12 @@ namespace DXLog.net
         //private readonly bool NoRadio = false; // For debugging with no radio attached
 
         // Pre-baked CI-V commands
-        private byte[] CIVSetFixedMode = { 0xfe, 0xfe, 0xff, 0xe0, 0x27, 0x14, 0x00, 0x01, 0xfd };
-        private byte[] CIVSetEdgeSet = { 0xfe, 0xfe, 0xff, 0xe0, 0x27, 0x16, 0x0, 0xff, 0xfd };
-        private byte[] CIVSetRefLevel = { 0xfe, 0xfe, 0xff, 0xe0, 0x27, 0x19, 0x00, 0x00, 0x00, 0x00, 0xfd };
+        //private byte[] CIVSetFixedMode = { 0xfe, 0xfe, 0xff, 0xe0, 0x27, 0x14, 0x00, 0x01, 0xfd };
+        //private byte[] CIVSetEdgeSet = { 0xfe, 0xfe, 0xff, 0xe0, 0x27, 0x16, 0x0, 0xff, 0xfd };
+        //private byte[] CIVSetRefLevel = { 0xfe, 0xfe, 0xff, 0xe0, 0x27, 0x19, 0x00, 0x00, 0x00, 0x00, 0xfd };
+        private byte[] CIVSetFixedMode = { 0x27, 0x14, 0x00, 0x01 };
+        private byte[] CIVSetEdgeSet = { 0x27, 0x16, 0x0, 0xff };
+        private byte[] CIVSetRefLevel = { 0x27, 0x19, 0x00, 0x00, 0x00, 0x00 };
         //private byte[] CIVSetPwrLevel = { 0xfe, 0xfe, 0xff, 0xe0, 0x14, 0x0a, 0x00, 0x00, 0xfd };
         private byte[] CIVSetPwrLevel = { 0x14, 0x0a, 0x00, 0x00};
         private const int MaxMHz = 470;
@@ -309,39 +312,40 @@ namespace DXLog.net
         // Update radio with new waterfall edges
         private void UpdateRadioEdges(int lower_edge, int upper_edge, int ICOMedgeSegment)
         {
+            // Compose CI-V command to set waterfall edges
+            byte[] CIVSetEdges = new byte[]
+            {
+                0x27, 0x1e,
+                (byte)((ICOMedgeSegment / 10) * 16 + (ICOMedgeSegment % 10)),
+                (byte)Set.EdgeSet,
+                0x00, // Lower 10Hz & 1Hz
+                (byte)((lower_edge % 10) * 16 + 0), // 1kHz & 100Hz
+                (byte)(((lower_edge / 100) % 10) * 16 + ((lower_edge / 10) % 10)), // 100kHz & 10kHz
+                (byte)(((lower_edge / 10000) % 10) * 16 + (lower_edge / 1000) % 10), // 10MHz & 1MHz
+                (byte)(((lower_edge / 1000000) % 10) * 16 + (lower_edge / 100000) % 10), // 1GHz & 100MHz
+                0x00, // // Upper 10Hz & 1Hz 
+                (byte)((upper_edge % 10) * 16 + 0), // 1kHz & 100Hz
+                (byte)(((upper_edge / 100) % 10) * 16 + (upper_edge / 10) % 10), // 100kHz & 10kHz
+                (byte)(((upper_edge / 10000) % 10) * 16 + (upper_edge / 1000) % 10), // 10MHz & 1MHz
+                (byte)(((upper_edge / 1000000) % 10) * 16 + (upper_edge / 100000) % 10) // 1GHz & 100MHz
+            };
+
+            //CIVSetFixedMode[2] = Radio1.GetCIVAddress();
+            //CIVSetFixedMode[7] = (byte)(Set.Scrolling ? 0x03 : 0x01);
+            //CIVSetEdgeSet[2] = Radio1.GetCIVAddress();
+            //CIVSetEdgeSet[7] = (byte)Set.EdgeSet;
+            CIVSetFixedMode[3] = (byte)(Set.Scrolling ? 0x03 : 0x01);
+            CIVSetEdgeSet[3] = (byte)Set.EdgeSet;
+
+            debuglabel1.Text = BitConverter.ToString(CIVSetFixedMode).Replace("-", " ");
+            debuglabel2.Text = BitConverter.ToString(CIVSetEdgeSet).Replace("-", " ");
+            debuglabel3.Text = BitConverter.ToString(CIVSetEdges).Replace("-", " ");
+
             if (Radio1 != null && Radio1.IsICOM())
             {
-                // Compose CI-V command to set waterfall edges
-                byte[] CIVSetEdges = new byte[19]
-                {
-                    0xfe, 0xfe, Radio1.GetCIVAddress(), 0xe0,
-                    0x27, 0x1e,
-                    (byte)((ICOMedgeSegment / 10) * 16 + (ICOMedgeSegment % 10)),
-                    (byte)Set.EdgeSet,
-                    0x00, // Lower 10Hz & 1Hz
-                    (byte)((lower_edge % 10) * 16 + 0), // 1kHz & 100Hz
-                    (byte)(((lower_edge / 100) % 10) * 16 + ((lower_edge / 10) % 10)), // 100kHz & 10kHz
-                    (byte)(((lower_edge / 10000) % 10) * 16 + (lower_edge / 1000) % 10), // 10MHz & 1MHz
-                    (byte)(((lower_edge / 1000000) % 10) * 16 + (lower_edge / 100000) % 10), // 1GHz & 100MHz
-                    0x00, // // Upper 10Hz & 1Hz 
-                    (byte)((upper_edge % 10) * 16 + 0), // 1kHz & 100Hz
-                    (byte)(((upper_edge / 100) % 10) * 16 + (upper_edge / 10) % 10), // 100kHz & 10kHz
-                    (byte)(((upper_edge / 10000) % 10) * 16 + (upper_edge / 1000) % 10), // 10MHz & 1MHz
-                    (byte)(((upper_edge / 1000000) % 10) * 16 + (upper_edge / 100000) % 10), // 1GHz & 100MHz
-                    0xfd
-                };
-
-                CIVSetFixedMode[2] = Radio1.GetCIVAddress();
-                CIVSetFixedMode[7] = (byte)(Set.Scrolling ? 0x03 : 0x01);
-                CIVSetEdgeSet[2] = Radio1.GetCIVAddress();
-                CIVSetEdgeSet[7] = (byte)Set.EdgeSet;
-
                 Radio1.SendCustomCommand(CIVSetFixedMode);
                 Radio1.SendCustomCommand(CIVSetEdgeSet);
                 Radio1.SendCustomCommand(CIVSetEdges);
-                debuglabel1.Text = BitConverter.ToString(CIVSetFixedMode).Replace("-", " ");
-                debuglabel2.Text = BitConverter.ToString(CIVSetEdgeSet).Replace("-", " ");
-                debuglabel3.Text = BitConverter.ToString(CIVSetEdges).Replace("-", " ");
             }
         }
 
@@ -354,18 +358,21 @@ namespace DXLog.net
                 RefLevelLabel.Text = string.Format("Ref: {0:+#;-#;0}dB", ref_level);
             }
 
+            int absRefLevel = (ref_level >= 0) ? ref_level : -ref_level;
+
+            //CIVSetRefLevel[2] = Radio1.GetCIVAddress();
+            //CIVSetRefLevel[7] = (byte)((absRefLevel / 10) * 16 + absRefLevel % 10);
+            //CIVSetRefLevel[9] = (ref_level >= 0) ? (byte)0 : (byte)1;
+            CIVSetRefLevel[3] = (byte)((absRefLevel / 10) * 16 + absRefLevel % 10);
+            CIVSetRefLevel[5] = (ref_level >= 0) ? (byte)0 : (byte)1;
+
+            debuglabel1.Text = BitConverter.ToString(CIVSetRefLevel).Replace("-", " ");
+            debuglabel2.Text = "";
+            debuglabel3.Text = "";
+
             if (Radio1 != null && Radio1.IsICOM())
             {
-                int absRefLevel = (ref_level >= 0) ? ref_level : -ref_level;
-
-                CIVSetRefLevel[2] = Radio1.GetCIVAddress();
-                CIVSetRefLevel[7] = (byte)((absRefLevel / 10) * 16 + absRefLevel % 10);
-                CIVSetRefLevel[9] = (ref_level >= 0) ? (byte)0 : (byte)1;
-
                 Radio1.SendCustomCommand(CIVSetRefLevel);
-                debuglabel1.Text = BitConverter.ToString(CIVSetRefLevel).Replace("-", " ");
-                debuglabel2.Text = "";
-                debuglabel3.Text = "";
             }
         }
 
@@ -378,20 +385,20 @@ namespace DXLog.net
                 PwrLevelLabel.Text = string.Format("Pwr:{0,3}%", pwr_level);
             }
 
+            int icomPower = (int)(255.0f * pwr_level / 100.0f + 0.99f); // Weird ICOM mapping of percent to binary
+
+            //CIVSetPwrLevel[2] = Radio1.GetCIVAddress();
+            //CIVSetPwrLevel[6] = (byte)((icomPower / 100) % 10);
+            //CIVSetPwrLevel[7] = (byte)((((icomPower / 10) % 10) << 4) + (icomPower % 10));
+            CIVSetPwrLevel[2] = (byte)((icomPower / 100) % 10);
+            CIVSetPwrLevel[3] = (byte)((((icomPower / 10) % 10) << 4) + (icomPower % 10));
+
+            debuglabel1.Text = BitConverter.ToString(CIVSetPwrLevel).Replace("-", " ");
+            debuglabel2.Text = "";
+            debuglabel3.Text = "";
             if (Radio1 != null && Radio1.IsICOM())
             {
-                int icomPower = (int)(255.0f * pwr_level / 100.0f + 0.99f); // Weird ICOM mapping of percent to binary
-
-                //CIVSetPwrLevel[2] = Radio1.GetCIVAddress();
-                //CIVSetPwrLevel[6] = (byte)((icomPower / 100) % 10);
-                //CIVSetPwrLevel[7] = (byte)((((icomPower / 10) % 10) << 4) + (icomPower % 10));
-                CIVSetPwrLevel[2] = (byte)((icomPower / 100) % 10);
-                CIVSetPwrLevel[3] = (byte)((((icomPower / 10) % 10) << 4) + (icomPower % 10));
-
                 Radio1.SendCustomCommand(CIVSetPwrLevel);
-                debuglabel1.Text = BitConverter.ToString(CIVSetPwrLevel).Replace("-", " ");
-                debuglabel2.Text = "";
-                debuglabel3.Text = "";
             }
         }
     }
@@ -403,7 +410,7 @@ namespace DXLog.net
         public string RefLevelCW = "0;0;0;0;0;0;0;0;0;0;0;0;0;0";
         public string PwrLevelCW = "18;18;18;18;18;18;18;18;18;18;18;18;18;18";
 
-        public string LowerEdgePhone = "1840;3600;5353;7040;10100;14100;18111;21150;24931;28300;50100;70000;144200;432200";
+        public string LowerEdgePhone = "1840;3600;5352;7040;10100;14100;18111;21150;24931;28300;50100;70000;144200;432200";
         public string UpperEdgePhone = "2000;3800;5366;7200;10150;14350;18168;21450;24990;28600;50500;71000;144400;432300";
         public string RefLevelPhone = "0;0;0;0;0;0;0;0;0;0;0;0;0;0";
         public string PwrLevelPhone = "18;18;18;18;18;18;18;18;18;18;18;18;18;18";
