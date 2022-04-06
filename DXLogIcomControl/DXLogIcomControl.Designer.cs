@@ -35,6 +35,9 @@
             this.PwrLevelLabel = new System.Windows.Forms.Label();
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.debuglabel1 = new System.Windows.Forms.Label();
+            this.debuglabel2 = new System.Windows.Forms.Label();
+            this.debuglabel3 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.RefLevelSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PwrLevelSlider)).BeginInit();
             this.contextMenuStrip2.SuspendLayout();
@@ -92,12 +95,42 @@
             this.propertiesToolStripMenuItem.Text = "Properties";
             this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.propertiesToolStripMenuItem_Click);
             // 
+            // debuglabel1
+            // 
+            this.debuglabel1.AutoSize = true;
+            this.debuglabel1.Location = new System.Drawing.Point(6, 79);
+            this.debuglabel1.Name = "debuglabel1";
+            this.debuglabel1.Size = new System.Drawing.Size(65, 13);
+            this.debuglabel1.TabIndex = 5;
+            this.debuglabel1.Text = "debuglabel1";
+            // 
+            // debuglabel2
+            // 
+            this.debuglabel2.AutoSize = true;
+            this.debuglabel2.Location = new System.Drawing.Point(6, 100);
+            this.debuglabel2.Name = "debuglabel2";
+            this.debuglabel2.Size = new System.Drawing.Size(65, 13);
+            this.debuglabel2.TabIndex = 6;
+            this.debuglabel2.Text = "debuglabel2";
+            // 
+            // debuglabel3
+            // 
+            this.debuglabel3.AutoSize = true;
+            this.debuglabel3.Location = new System.Drawing.Point(6, 121);
+            this.debuglabel3.Name = "debuglabel3";
+            this.debuglabel3.Size = new System.Drawing.Size(65, 13);
+            this.debuglabel3.TabIndex = 7;
+            this.debuglabel3.Text = "debuglabel3";
+            // 
             // DXLogIcomControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(185, 81);
+            this.ClientSize = new System.Drawing.Size(338, 143);
             this.ContextMenuStrip = this.contextMenuStrip2;
+            this.Controls.Add(this.debuglabel3);
+            this.Controls.Add(this.debuglabel2);
+            this.Controls.Add(this.debuglabel1);
             this.Controls.Add(this.PwrLevelLabel);
             this.Controls.Add(this.PwrLevelSlider);
             this.Controls.Add(this.RefLevelSlider);
@@ -124,5 +157,8 @@
         private System.Windows.Forms.Label PwrLevelLabel;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
         private System.Windows.Forms.ToolStripMenuItem propertiesToolStripMenuItem;
+        private System.Windows.Forms.Label debuglabel1;
+        private System.Windows.Forms.Label debuglabel2;
+        private System.Windows.Forms.Label debuglabel3;
     }
 }

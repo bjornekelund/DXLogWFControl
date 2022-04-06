@@ -24,14 +24,14 @@ namespace DXLog.net
 
         private FrmMain mainForm = null;
 
-        private readonly bool NoRadio = false; // For debugging with no radio attached
+        //private readonly bool NoRadio = false; // For debugging with no radio attached
 
         // Pre-baked CI-V commands
         private byte[] CIVSetFixedMode = { 0xfe, 0xfe, 0xff, 0xe0, 0x27, 0x14, 0x00, 0x01, 0xfd };
         private byte[] CIVSetEdgeSet = { 0xfe, 0xfe, 0xff, 0xe0, 0x27, 0x16, 0x0, 0xff, 0xfd };
         private byte[] CIVSetRefLevel = { 0xfe, 0xfe, 0xff, 0xe0, 0x27, 0x19, 0x00, 0x00, 0x00, 0x00, 0xfd };
-        private byte[] CIVSetPwrLevel = { 0xfe, 0xfe, 0xff, 0xe0, 0x14, 0x0a, 0x00, 0x00, 0xfd };
-        private const int HamBands = 14;
+        //private byte[] CIVSetPwrLevel = { 0xfe, 0xfe, 0xff, 0xe0, 0x14, 0x0a, 0x00, 0x00, 0xfd };
+        private byte[] CIVSetPwrLevel = { 0x14, 0x0a, 0x00, 0x00};
         private const int MaxMHz = 470;
         private const int TableSize = 74;
 
@@ -309,8 +309,7 @@ namespace DXLog.net
         // Update radio with new waterfall edges
         private void UpdateRadioEdges(int lower_edge, int upper_edge, int ICOMedgeSegment)
         {
-            // Update radio if we are not in debug mode
-            if (!NoRadio && Radio1 != null && Radio1.IsICOM())
+            if (Radio1 != null && Radio1.IsICOM())
             {
                 // Compose CI-V command to set waterfall edges
                 byte[] CIVSetEdges = new byte[19]
@@ -340,6 +339,9 @@ namespace DXLog.net
                 Radio1.SendCustomCommand(CIVSetFixedMode);
                 Radio1.SendCustomCommand(CIVSetEdgeSet);
                 Radio1.SendCustomCommand(CIVSetEdges);
+                debuglabel1.Text = BitConverter.ToString(CIVSetFixedMode).Replace("-", " ");
+                debuglabel2.Text = BitConverter.ToString(CIVSetEdgeSet).Replace("-", " ");
+                debuglabel3.Text = BitConverter.ToString(CIVSetEdges).Replace("-", " ");
             }
         }
 
@@ -361,6 +363,9 @@ namespace DXLog.net
                 CIVSetRefLevel[9] = (ref_level >= 0) ? (byte)0 : (byte)1;
 
                 Radio1.SendCustomCommand(CIVSetRefLevel);
+                debuglabel1.Text = BitConverter.ToString(CIVSetRefLevel).Replace("-", " ");
+                debuglabel2.Text = "";
+                debuglabel3.Text = "";
             }
         }
 
@@ -377,10 +382,16 @@ namespace DXLog.net
             {
                 int icomPower = (int)(255.0f * pwr_level / 100.0f + 0.99f); // Weird ICOM mapping of percent to binary
 
-                CIVSetPwrLevel[2] = Radio1.GetCIVAddress();
-                CIVSetPwrLevel[6] = (byte)((icomPower / 100) % 10);
-                CIVSetPwrLevel[7] = (byte)((((icomPower / 10) % 10) << 4) + (icomPower % 10));
+                //CIVSetPwrLevel[2] = Radio1.GetCIVAddress();
+                //CIVSetPwrLevel[6] = (byte)((icomPower / 100) % 10);
+                //CIVSetPwrLevel[7] = (byte)((((icomPower / 10) % 10) << 4) + (icomPower % 10));
+                CIVSetPwrLevel[2] = (byte)((icomPower / 100) % 10);
+                CIVSetPwrLevel[3] = (byte)((((icomPower / 10) % 10) << 4) + (icomPower % 10));
+
                 Radio1.SendCustomCommand(CIVSetPwrLevel);
+                debuglabel1.Text = BitConverter.ToString(CIVSetPwrLevel).Replace("-", " ");
+                debuglabel2.Text = "";
+                debuglabel3.Text = "";
             }
         }
     }
