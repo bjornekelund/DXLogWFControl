@@ -20,7 +20,6 @@ namespace DXLog.net
         }
         
         private ContestData _cdata = null;
-        //private Font _windowFont = new Font("Courier New", 10, FontStyle.Regular);
 
         private FrmMain mainForm = null;
 
@@ -31,18 +30,6 @@ namespace DXLog.net
         private byte[] CIVSetPwrLevel = { 0x14, 0x0a, 0x00, 0x00};
         private const int MaxMHz = 470;
         private const int TableSize = 74;
-
-        // Maps MHz to band name.
-        private string[] bandName = new string[MaxMHz];
-        private readonly string[] REFbandName = new string[TableSize]
-            { "??m", "160m", "??m", "80m", "??m", "60m", "40m", "40m", "??m", "30m",
-            "30m", "??m", "??m", "20m", "20m", "??m", "??m", "17m", "17m", "??m",
-            "15m", "15m", "??m", "??m", "12m", "12m", "??m", "11m", "10m", "10m",
-            "??m", "??m", "??m", "??m", "??m", "??m", "??m", "??m", "??m", "??m",
-            "??m", "??m", "??m", "??m", "??m", "??m", "??m", "??m", "??m", "6m",
-            "6m", "6m", "6m", "6m", "??m", "??m", "??m", "??m", "??m", "??m",
-            "??m", "??m", "??m", "??m", "??m", "??m", "??m", "??m", "??m", "4m",
-            "4m", "4m", "4m", "4m" };
 
         // Maps MHz to internal band index.
         // Bands are 160=0, 80=1, etc. up to 13=70cm
@@ -57,7 +44,7 @@ namespace DXLog.net
             10, 11, 11, 11, 11, 11, 11, 11, 11, 11,
             11, 11, 11, 11 };
 
-        // Maps actual MHz to radio's scope edge set on ICOM 7xxx. 54 elements.
+        // Maps actual MHz to radio's scope edge set.
         private int[] RadioEdgeSet = new int[MaxMHz];
         private readonly int[] REFRadioEdgeSet = new int[TableSize]
             { 1, 2, 3, 3, 3, 3, 4, 4, 5, 5,
@@ -69,7 +56,6 @@ namespace DXLog.net
             13, 13, 13, 13, 13, 13, 13, 13, 13, 13,
             13, 13, 13, 13 };
 
-        // Global variables
         private int CurrentLowerEdge, CurrentUpperEdge, CurrentRefLevel, CurrentPwrLevel;
         private int CurrentMHz = 0;
         private string CurrentMode = string.Empty;
@@ -98,7 +84,6 @@ namespace DXLog.net
             // Set the decoding arrays to default
             for (int MHz = 0; MHz < MaxMHz; MHz++)
             {
-                bandName[MHz] = "??m";
                 bandIndex[MHz] = 1;
                 RadioEdgeSet[MHz] = 1;
             }
@@ -106,7 +91,6 @@ namespace DXLog.net
             // Initialize using tables
             for (int MHz = 0; MHz < TableSize; MHz++)
             {
-                bandName[MHz] = REFbandName[MHz];
                 bandIndex[MHz] = REFbandIndex[MHz];
                 RadioEdgeSet[MHz] = REFRadioEdgeSet[MHz];
             }
@@ -114,7 +98,6 @@ namespace DXLog.net
             // Add 2m
             for (int MHz = 137; MHz < 200; MHz++)
             {
-                bandName[MHz] = "2m";
                 bandIndex[MHz] = 12;
                 RadioEdgeSet[MHz] = 16;
             }
@@ -122,7 +105,6 @@ namespace DXLog.net
             // Add 70cm
             for (int MHz = 400; MHz < 470; MHz++)
             {
-                bandName[MHz] = "70cm";
                 bandIndex[MHz] = 13;
                 RadioEdgeSet[MHz] = 17;
             }
@@ -159,7 +141,7 @@ namespace DXLog.net
             }
             catch
             {
-                // Settings are somehow corrupted
+                // Settings are somehow corrupted. Reset everything to default.
                 Set.LowerEdgeCW = Def.LowerEdgeCW.Split(';').Select(s => int.Parse(s)).ToArray();
                 Set.UpperEdgeCW = Def.UpperEdgeCW.Split(';').Select(s => int.Parse(s)).ToArray();
 
@@ -172,16 +154,13 @@ namespace DXLog.net
                 Set.EdgeSet = Def.EdgeSet;
                 Set.Scrolling = Def.UseScrolling;
 
-                if (all)
-                {
-                    Set.RefLevelCW = Def.RefLevelCW.Split(';').Select(s => int.Parse(s)).ToArray();
-                    Set.RefLevelPhone = Def.RefLevelPhone.Split(';').Select(s => int.Parse(s)).ToArray();
-                    Set.RefLevelDigital = Def.RefLevelDigital.Split(';').Select(s => int.Parse(s)).ToArray();
+                Set.RefLevelCW = Def.RefLevelCW.Split(';').Select(s => int.Parse(s)).ToArray();
+                Set.RefLevelPhone = Def.RefLevelPhone.Split(';').Select(s => int.Parse(s)).ToArray();
+                Set.RefLevelDigital = Def.RefLevelDigital.Split(';').Select(s => int.Parse(s)).ToArray();
 
-                    Set.PwrLevelPhone = Def.PwrLevelPhone.Split(';').Select(s => int.Parse(s)).ToArray();
-                    Set.PwrLevelCW = Def.PwrLevelCW.Split(';').Select(s => int.Parse(s)).ToArray();
-                    Set.PwrLevelDigital = Def.PwrLevelDigital.Split(';').Select(s => int.Parse(s)).ToArray();
-                }
+                Set.PwrLevelPhone = Def.PwrLevelPhone.Split(';').Select(s => int.Parse(s)).ToArray();
+                Set.PwrLevelCW = Def.PwrLevelCW.Split(';').Select(s => int.Parse(s)).ToArray();
+                Set.PwrLevelDigital = Def.PwrLevelDigital.Split(';').Select(s => int.Parse(s)).ToArray();
             }
         }
 
