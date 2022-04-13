@@ -33,31 +33,13 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Ciloci.Flee">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\DXLog.net\Ciloci.Flee.dll</HintPath>
-    </Reference>
-    <Reference Include="CWKeyer">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\DXLog.net\CWKeyer.dll</HintPath>
-    </Reference>
-    <Reference Include="DXLComm">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\DXLog.net\DXLComm.dll</HintPath>
-    </Reference>
     <Reference Include="DXLog.net, Version=2.2.13.34462, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\DXLog.net\DXLog.net.exe</HintPath>
     </Reference>
-    <Reference Include="DXLog.net.COM">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\DXLog.net\DXLog.net.COM.dll</HintPath>
-    </Reference>
-    <Reference Include="DXLogCalculators">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\DXLog.net\DXLogCalculators.dll</HintPath>
-    </Reference>
-    <Reference Include="DXLogDAL, Version=2.1.4.30873, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="IOComm, Version=2.5.0.26601, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\DXLog.net\DXLogDAL.dll</HintPath>
-    </Reference>
-    <Reference Include="IOComm">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\DXLog.net\IOComm.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\DXLog.net\IOComm.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -68,8 +50,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Utilities">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\DXLog.net\Utilities.dll</HintPath>
+    <Reference Include="Utilities, Version=2.5.0.26600, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\DXLog.net\Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
