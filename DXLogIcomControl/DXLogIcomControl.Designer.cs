@@ -52,7 +52,7 @@
             // 
             // RefLevelSlider
             // 
-            this.RefLevelSlider.LargeChange = 2;
+            this.RefLevelSlider.LargeChange = 1;
             this.RefLevelSlider.Location = new System.Drawing.Point(68, 12);
             this.RefLevelSlider.Maximum = 20;
             this.RefLevelSlider.Minimum = -20;
@@ -64,7 +64,7 @@
             // 
             // PwrLevelSlider
             // 
-            this.PwrLevelSlider.LargeChange = 2;
+            this.PwrLevelSlider.LargeChange = 1;
             this.PwrLevelSlider.Location = new System.Drawing.Point(68, 43);
             this.PwrLevelSlider.Maximum = 100;
             this.PwrLevelSlider.Name = "PwrLevelSlider";
