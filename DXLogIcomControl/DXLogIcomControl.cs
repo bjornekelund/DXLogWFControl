@@ -24,10 +24,17 @@ namespace DXLog.net
         private FrmMain mainForm = null;
 
         // Pre-baked CI-V commands
-        private byte[] CIVSetFixedMode = { 0x27, 0x14, 0x00, 0x01 };
-        private byte[] CIVSetEdgeSet = { 0x27, 0x16, 0x0, 0xff };
-        private byte[] CIVSetRefLevel = { 0x27, 0x19, 0x00, 0x00, 0x00, 0x00 };
+        private byte[] CIVSetFixedModeMain = { 0x27, 0x14, 0x00, 0x01 };
+        private byte[] CIVSetFixedModeSub = { 0x27, 0x14, 0x01, 0x01 };
+
+        private byte[] CIVSetEdgeSetMain = { 0x27, 0x16, 0x00, 0xff };
+        private byte[] CIVSetEdgeSetSub = { 0x27, 0x16, 0x01, 0xff };
+
+        private byte[] CIVSetRefLevelMain = { 0x27, 0x19, 0x00, 0x00, 0x00, 0x00 };
+        private byte[] CIVSetRefLevelSub = { 0x27, 0x19, 0x01, 0x00, 0x00, 0x00 };
+
         private byte[] CIVSetPwrLevel = { 0x14, 0x0a, 0x00, 0x00};
+
         private const int MaxMHz = 470;
         private const int TableSize = 74;
 
@@ -339,17 +346,22 @@ namespace DXLog.net
                 (byte)(((upper_edge / 1000000) % 10) * 16 + (upper_edge / 100000) % 10) // 1GHz & 100MHz
             };
 
-            CIVSetFixedMode[3] = (byte)(Set.Scrolling ? 0x03 : 0x01);
-            CIVSetEdgeSet[3] = (byte)Set.EdgeSet;
+            CIVSetFixedModeMain[3] = (byte)(Set.Scrolling ? 0x03 : 0x01);
+            CIVSetEdgeSetMain[3] = (byte)Set.EdgeSet;
 
-            //debuglabel1.Text = BitConverter.ToString(CIVSetFixedMode).Replace("-", " ");
-            //debuglabel2.Text = BitConverter.ToString(CIVSetEdgeSet).Replace("-", " ");
+            CIVSetFixedModeSub[3] = (byte)(Set.Scrolling ? 0x03 : 0x01);
+            CIVSetEdgeSetSub[3] = (byte)Set.EdgeSet;
+
+            //debuglabel1.Text = BitConverter.ToString(CIVSetFixedModeMain).Replace("-", " ");
+            //debuglabel2.Text = BitConverter.ToString(CIVSetEdgeSetMain).Replace("-", " ");
             //debuglabel3.Text = BitConverter.ToString(CIVSetEdges).Replace("-", " ");
 
             if (Radio1 != null && Radio1.IsICOM())
             {
-                Radio1.SendCustomCommand(CIVSetFixedMode);
-                Radio1.SendCustomCommand(CIVSetEdgeSet);
+                Radio1.SendCustomCommand(CIVSetFixedModeMain);
+                Radio1.SendCustomCommand(CIVSetFixedModeSub);
+                Radio1.SendCustomCommand(CIVSetEdgeSetMain);
+                Radio1.SendCustomCommand(CIVSetEdgeSetSub);
                 Radio1.SendCustomCommand(CIVSetEdges);
             }
         }
@@ -365,8 +377,11 @@ namespace DXLog.net
 
             int absRefLevel = (ref_level >= 0) ? ref_level : -ref_level;
 
-            CIVSetRefLevel[3] = (byte)((absRefLevel / 10) * 16 + absRefLevel % 10);
-            CIVSetRefLevel[5] = (ref_level >= 0) ? (byte)0 : (byte)1;
+            CIVSetRefLevelMain[3] = (byte)((absRefLevel / 10) * 16 + absRefLevel % 10);
+            CIVSetRefLevelMain[5] = (ref_level >= 0) ? (byte)0 : (byte)1;
+
+            CIVSetRefLevelSub[3] = (byte)((absRefLevel / 10) * 16 + absRefLevel % 10);
+            CIVSetRefLevelSub[5] = (ref_level >= 0) ? (byte)0 : (byte)1;
 
             //debuglabel1.Text = BitConverter.ToString(CIVSetRefLevel).Replace("-", " ");
             //debuglabel2.Text = "";
@@ -374,7 +389,8 @@ namespace DXLog.net
 
             if (Radio1 != null && Radio1.IsICOM())
             {
-                Radio1.SendCustomCommand(CIVSetRefLevel);
+                Radio1.SendCustomCommand(CIVSetRefLevelMain);
+                Radio1.SendCustomCommand(CIVSetRefLevelSub);
             }
         }
 
