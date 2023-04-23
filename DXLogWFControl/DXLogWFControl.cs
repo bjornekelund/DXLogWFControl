@@ -235,6 +235,11 @@ namespace DXLog.net
         private void UpdateRadio(int radionumber)
         {
             //System.Threading.Thread.Sleep(100);
+            if (radionumber == 1)
+            {
+                CurrentMHz = (int)(radionumber == 1 ? contestdata.Radio1_ActiveFreq : contestdata.Radio2_ActiveFreq) / 1000;
+                CurrentMode = contestdata.ActiveR1Mode;
+            }
             CurrentMHz = (int)(radionumber == 1 ? contestdata.Radio1_ActiveFreq : contestdata.Radio2_ActiveFreq) / 1000;
             CurrentMode = contestdata.ActiveR1Mode;
 
