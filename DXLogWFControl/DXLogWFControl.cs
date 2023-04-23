@@ -247,7 +247,7 @@ namespace DXLog.net
 
         private void propertiesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form prop = new IcomProperties(Set);
+            Form prop = new WFProperties(Set);
   
             if (prop.ShowDialog() == DialogResult.OK)
             {
