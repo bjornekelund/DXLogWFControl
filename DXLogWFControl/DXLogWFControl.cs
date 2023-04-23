@@ -79,7 +79,7 @@ namespace DXLog.net
 
         RadioType [] Radiomodel = { RadioType.None, RadioType.None };
 
-        CATCommon[] Radio = { null, null };
+        CATCommon[] Radioobject = { null, null };
 
         RadioSettings Set = new RadioSettings();
         DefaultRadioSettings Def = new DefaultRadioSettings();
@@ -129,6 +129,23 @@ namespace DXLog.net
             }
 
             GetConfig(true);
+
+            for (int r = 0; r < 2; r++)
+            {
+                Radioobject[r] = mainForm.COMMainProvider.RadioObject(r);
+                if (Radioobject[r] != null)
+                {
+                    string radioname = (string)Radioobject.GetType().GetField("RadioID").GetValue(null);
+                    if (Radioobject[r].IsICOM())
+                        Radiomodel[r] = RadioType.ICOM;
+                    if (radioname.Contains(" K3"))
+                        Radiomodel[r] = RadioType.ElecraftKP3;
+                    else if (radioname.Contains(" K4"))
+                        Radiomodel[r] = RadioType.ElecraftK4;
+                    else if (radioname.Contains(" 890") || radioname.Contains(" 990"))
+                        Radiomodel[r] = RadioType.Kenwood;
+                }
+            }
         }
 
         void GetConfig(bool all)
@@ -245,7 +262,7 @@ namespace DXLog.net
                     break;
             }
 
-            Radio[0] = mainForm.COMMainProvider.RadioObject(1);
+            Radioobject[0] = mainForm.COMMainProvider.RadioObject(1);
 
             // Update UI and waterfall edges and ref level in radio 
             UpdateRadioEdges(CurrentLowerEdge, CurrentUpperEdge, RadioEdgeSet[CurrentMHz]);
@@ -368,13 +385,13 @@ namespace DXLog.net
             //debuglabel2.Text = BitConverter.ToString(CIVSetEdgeSetMain).Replace("-", " ");
             //debuglabel3.Text = BitConverter.ToString(CIVSetEdges).Replace("-", " ");
 
-            if (Radio[0] != null && Radio[0].IsICOM())
+            if (Radioobject[0] != null && Radioobject[0].IsICOM())
             {
-                Radio[0].SendCustomCommand(CIVSetFixedModeMain);
-                Radio[0].SendCustomCommand(CIVSetFixedModeSub);
-                Radio[0].SendCustomCommand(CIVSetEdgeSetMain);
-                Radio[0].SendCustomCommand(CIVSetEdgeSetSub);
-                Radio[0].SendCustomCommand(CIVSetEdges);
+                Radioobject[0].SendCustomCommand(CIVSetFixedModeMain);
+                Radioobject[0].SendCustomCommand(CIVSetFixedModeSub);
+                Radioobject[0].SendCustomCommand(CIVSetEdgeSetMain);
+                Radioobject[0].SendCustomCommand(CIVSetEdgeSetSub);
+                Radioobject[0].SendCustomCommand(CIVSetEdges);
             }
         }
 
@@ -399,10 +416,10 @@ namespace DXLog.net
             //debuglabel2.Text = "";
             //debuglabel3.Text = "";
 
-            if (Radio[0] != null && Radio[0].IsICOM())
+            if (Radioobject[0] != null && Radioobject[0].IsICOM())
             {
-                Radio[0].SendCustomCommand(CIVSetRefLevelMain);
-                Radio[0].SendCustomCommand(CIVSetRefLevelSub);
+                Radioobject[0].SendCustomCommand(CIVSetRefLevelMain);
+                Radioobject[0].SendCustomCommand(CIVSetRefLevelSub);
             }
         }
 
@@ -423,9 +440,9 @@ namespace DXLog.net
             //debuglabel1.Text = BitConverter.ToString(CIVSetPwrLevel).Replace("-", " ");
             //debuglabel2.Text = "";
             //debuglabel3.Text = "";
-            if (Radio[0] != null && Radio[0].IsICOM())
+            if (Radioobject[0] != null && Radioobject[0].IsICOM())
             {
-                Radio[0].SendCustomCommand(CIVSetPwrLevel);
+                Radioobject[0].SendCustomCommand(CIVSetPwrLevel);
             }
         }
     }
