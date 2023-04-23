@@ -265,13 +265,13 @@ namespace DXLog.net
             Radioobject[0] = mainForm.COMMainProvider.RadioObject(1);
 
             // Update UI and waterfall edges and ref level in radio 
-            UpdateRadioEdges(CurrentLowerEdge, CurrentUpperEdge, RadioEdgeSet[CurrentMHz]);
+            UpdateICOMEdges(CurrentLowerEdge, CurrentUpperEdge, RadioEdgeSet[CurrentMHz]);
             rangeLabel.Text = string.Format("WF: {0:N0} - {1:N0}", CurrentLowerEdge, CurrentUpperEdge);
             //System.Threading.Thread.Sleep(50);
 
-            UpdateRadioReflevel(CurrentRefLevel);
+            UpdateICOMReflevel(CurrentRefLevel);
             //System.Threading.Thread.Sleep(50);
-            UpdateRadioPwrlevel(CurrentPwrLevel);
+            UpdateICOMPwrlevel(CurrentPwrLevel);
         }
 
         private void propertiesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -301,7 +301,7 @@ namespace DXLog.net
         {
             CurrentRefLevel = RefLevelSlider.Value;
 
-            UpdateRadioReflevel(CurrentRefLevel);
+            UpdateICOMReflevel(CurrentRefLevel);
 
             switch (CurrentMode)
             {
@@ -333,7 +333,7 @@ namespace DXLog.net
         private void OnPwrSlider() 
         { 
             CurrentPwrLevel = PwrLevelSlider.Value;
-            UpdateRadioPwrlevel(CurrentPwrLevel);
+            UpdateICOMPwrlevel(CurrentPwrLevel);
 
             if (CurrentMHz != 0)
             {
@@ -354,8 +354,8 @@ namespace DXLog.net
             }
         }
 
-        // Update radio with new waterfall edges
-        private void UpdateRadioEdges(int lower_edge, int upper_edge, int ICOMedgeSegment)
+        // Update ICOM radio with new waterfall edges
+        private void UpdateICOMEdges(int lower_edge, int upper_edge, int ICOMedgeSegment)
         {
             // Compose CI-V command to set waterfall edges
             byte[] CIVSetEdges = new byte[]
@@ -395,8 +395,8 @@ namespace DXLog.net
             }
         }
 
-        // Update radio with new REF level
-        private void UpdateRadioReflevel(int ref_level)
+        // Update ICOM radio with new REF level
+        private void UpdateICOMReflevel(int ref_level)
         {
             if (RefLevelLabel != null)
             {
@@ -423,8 +423,8 @@ namespace DXLog.net
             }
         }
 
-        // Update radio with new PWR level
-        private void UpdateRadioPwrlevel(int pwr_level)
+        // Update ICOM radio with new PWR level
+        private void UpdateICOMPwrlevel(int pwr_level)
         {
             if (PwrLevelSlider != null)
             {
