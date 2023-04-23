@@ -16,12 +16,22 @@ namespace DXLog.net
 
         public static int CusFormID
         {
-            get { return 1022; }
+            get { return 1023; }
         }
         
-        private ContestData _cdata = null;
+        private ContestData contestdata = null;
 
         private FrmMain mainForm = null;
+
+        private enum RadioType
+        {
+            None,
+            ICOM,
+            ElecraftKP3,
+            ElecraftK4,
+            Kenwood,
+            Yaesu
+        }
 
         // Pre-baked CI-V commands
         private byte[] CIVSetFixedModeMain = { 0x27, 0x14, 0x00, 0x01 };
@@ -63,11 +73,13 @@ namespace DXLog.net
             13, 13, 13, 13, 13, 13, 13, 13, 13, 13,
             13, 13, 13, 13 };
 
-        private int CurrentLowerEdge, CurrentUpperEdge, CurrentRefLevel, CurrentPwrLevel;
-        private int CurrentMHz = 0;
-        private string CurrentMode = string.Empty;
+        int CurrentLowerEdge, CurrentUpperEdge, CurrentRefLevel, CurrentPwrLevel;
+        int CurrentMHz = 0;
+        string CurrentMode = string.Empty;
 
-        CATCommon Radio1 = null;
+        RadioType [] Radiomodel = { RadioType.None, RadioType.None };
+
+        CATCommon[] Radio = { null, null };
 
         RadioSettings Set = new RadioSettings();
         DefaultRadioSettings Def = new DefaultRadioSettings();
@@ -80,7 +92,7 @@ namespace DXLog.net
         public DXLogWFControl(ContestData cdata)
         {
             InitializeComponent();
-            _cdata = cdata;
+            contestdata = cdata;
 
             while (contextMenuStrip1.Items.Count > 0)
                 contextMenuStrip2.Items.Add(contextMenuStrip1.Items[0]);
@@ -183,7 +195,7 @@ namespace DXLog.net
 
             //mainForm.scheduler.Second -= UpdateRadio;
             //_cdata.ActiveVFOChanged -= UpdateRadio;
-            _cdata.ActiveRadioBandChanged -= UpdateRadio;
+            contestdata.ActiveRadioBandChanged -= UpdateRadio;
         }
 
         public override void InitializeLayout()
@@ -196,7 +208,7 @@ namespace DXLog.net
                 {
                     //mainForm.scheduler.Second += UpdateRadio;
                     //_cdata.ActiveVFOChanged += new ContestData.ActiveVFOChange(UpdateRadio);
-                    _cdata.ActiveRadioBandChanged += new ContestData.ActiveRadioBandChange(UpdateRadio);
+                    contestdata.ActiveRadioBandChanged += new ContestData.ActiveRadioBandChange(UpdateRadio);
                 }
             }
 
@@ -206,8 +218,8 @@ namespace DXLog.net
         private void UpdateRadio(int radionumber)
         {
             //System.Threading.Thread.Sleep(100);
-            CurrentMHz = (int)_cdata.Radio1_ActiveFreq / 1000;
-            CurrentMode = _cdata.ActiveR1Mode;
+            CurrentMHz = (int)(radionumber == 1 ? contestdata.Radio1_ActiveFreq : contestdata.Radio2_ActiveFreq) / 1000;
+            CurrentMode = contestdata.ActiveR1Mode;
 
             switch (CurrentMode)
             {
@@ -233,7 +245,7 @@ namespace DXLog.net
                     break;
             }
 
-            Radio1 = mainForm.COMMainProvider.RadioObject(1);
+            Radio[0] = mainForm.COMMainProvider.RadioObject(1);
 
             // Update UI and waterfall edges and ref level in radio 
             UpdateRadioEdges(CurrentLowerEdge, CurrentUpperEdge, RadioEdgeSet[CurrentMHz]);
@@ -356,13 +368,13 @@ namespace DXLog.net
             //debuglabel2.Text = BitConverter.ToString(CIVSetEdgeSetMain).Replace("-", " ");
             //debuglabel3.Text = BitConverter.ToString(CIVSetEdges).Replace("-", " ");
 
-            if (Radio1 != null && Radio1.IsICOM())
+            if (Radio[0] != null && Radio[0].IsICOM())
             {
-                Radio1.SendCustomCommand(CIVSetFixedModeMain);
-                Radio1.SendCustomCommand(CIVSetFixedModeSub);
-                Radio1.SendCustomCommand(CIVSetEdgeSetMain);
-                Radio1.SendCustomCommand(CIVSetEdgeSetSub);
-                Radio1.SendCustomCommand(CIVSetEdges);
+                Radio[0].SendCustomCommand(CIVSetFixedModeMain);
+                Radio[0].SendCustomCommand(CIVSetFixedModeSub);
+                Radio[0].SendCustomCommand(CIVSetEdgeSetMain);
+                Radio[0].SendCustomCommand(CIVSetEdgeSetSub);
+                Radio[0].SendCustomCommand(CIVSetEdges);
             }
         }
 
@@ -387,10 +399,10 @@ namespace DXLog.net
             //debuglabel2.Text = "";
             //debuglabel3.Text = "";
 
-            if (Radio1 != null && Radio1.IsICOM())
+            if (Radio[0] != null && Radio[0].IsICOM())
             {
-                Radio1.SendCustomCommand(CIVSetRefLevelMain);
-                Radio1.SendCustomCommand(CIVSetRefLevelSub);
+                Radio[0].SendCustomCommand(CIVSetRefLevelMain);
+                Radio[0].SendCustomCommand(CIVSetRefLevelSub);
             }
         }
 
@@ -411,9 +423,9 @@ namespace DXLog.net
             //debuglabel1.Text = BitConverter.ToString(CIVSetPwrLevel).Replace("-", " ");
             //debuglabel2.Text = "";
             //debuglabel3.Text = "";
-            if (Radio1 != null && Radio1.IsICOM())
+            if (Radio[0] != null && Radio[0].IsICOM())
             {
-                Radio1.SendCustomCommand(CIVSetPwrLevel);
+                Radio[0].SendCustomCommand(CIVSetPwrLevel);
             }
         }
     }
