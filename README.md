@@ -1,2 +1,2 @@
-# DXLogIcomControl
-A custom form for DXLog to control ICOM radios
+# DXLogWFControl
+A custom form for DXLog to control radios with waterfall displays

@@ -1,6 +1,6 @@
 ﻿namespace DXLog.net
 {
-    partial class DXLogIcomControl
+    partial class DXLogWFControl
     {
         /// <summary>
         /// Required designer variable.
@@ -105,7 +105,7 @@
             this.rangeLabel.TabIndex = 5;
             this.rangeLabel.Text = "WF: 432,400 - 432,600";
             // 
-            // DXLogIcomControl
+            // DXLogWFControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -120,8 +120,8 @@
             this.FormID = 1000;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "DXLogIcomControl";
-            this.Text = "ICOM controller";
+            this.Name = "DXLogWFControl";
+            this.Text = "Waterfall controller";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnClosing);
             ((System.ComponentModel.ISupportInitialize)(this.RefLevelSlider)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PwrLevelSlider)).EndInit();

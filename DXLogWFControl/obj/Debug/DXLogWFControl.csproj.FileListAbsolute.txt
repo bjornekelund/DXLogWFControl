@@ -1,0 +1,5 @@
+C:\Users\eekebjo\Source\Repos\bjornekelund\DXLogWFControl\DXLogWFControl\obj\Debug\DXLogWFControl.csproj.AssemblyReference.cache
+C:\Users\eekebjo\Source\Repos\bjornekelund\DXLogWFControl\DXLogWFControl\obj\Debug\DXLog.net.DXLogWFControl.resources
+C:\Users\eekebjo\Source\Repos\bjornekelund\DXLogWFControl\DXLogWFControl\obj\Debug\DXLog.net.IcomProperties.resources
+C:\Users\eekebjo\Source\Repos\bjornekelund\DXLogWFControl\DXLogWFControl\obj\Debug\DXLogWFControl.csproj.GenerateResource.cache
+C:\Users\eekebjo\Source\Repos\bjornekelund\DXLogWFControl\DXLogWFControl\obj\Debug\DXLogWFControl.csproj.CoreCompileInputs.cache

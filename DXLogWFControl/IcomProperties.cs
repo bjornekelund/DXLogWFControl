@@ -8,7 +8,7 @@ namespace DXLog.net
 {
     public partial class IcomProperties : Form
     {
-        public RadioSettings Settings; // Why is this not accessible from DXLogIcomControl??
+        public RadioSettings Settings; // Why is this not accessible from DXLogWFControl??
 
         public IcomProperties()
         {

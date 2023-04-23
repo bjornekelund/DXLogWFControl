@@ -7,11 +7,11 @@ using IOComm;
 
 namespace DXLog.net
 {
-    public partial class DXLogIcomControl : KForm
+    public partial class DXLogWFControl : KForm
     {
         public static string CusWinName
         {
-            get { return "ICOM Controller"; }
+            get { return "Waterfall Controller"; }
         }
 
         public static int CusFormID
@@ -72,12 +72,12 @@ namespace DXLog.net
         RadioSettings Set = new RadioSettings();
         DefaultRadioSettings Def = new DefaultRadioSettings();
 
-        public DXLogIcomControl()
+        public DXLogWFControl()
         {
             InitializeComponent();
         }
 
-        public DXLogIcomControl(ContestData cdata)
+        public DXLogWFControl(ContestData cdata)
         {
             InitializeComponent();
             _cdata = cdata;
