@@ -121,17 +121,17 @@
             // rangeLabel2
             // 
             this.rangeLabel2.AutoSize = true;
-            this.rangeLabel2.Location = new System.Drawing.Point(294, 115);
+            this.rangeLabel2.Location = new System.Drawing.Point(319, 115);
             this.rangeLabel2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.rangeLabel2.Name = "rangeLabel2";
-            this.rangeLabel2.Size = new System.Drawing.Size(171, 20);
+            this.rangeLabel2.Size = new System.Drawing.Size(138, 20);
             this.rangeLabel2.TabIndex = 10;
-            this.rangeLabel2.Text = "WF: 432,400 - 432,600";
+            this.rangeLabel2.Text = "432,400 - 432,600";
             // 
             // PwrLevelLabel2
             // 
             this.PwrLevelLabel2.AutoSize = true;
-            this.PwrLevelLabel2.Location = new System.Drawing.Point(273, 71);
+            this.PwrLevelLabel2.Location = new System.Drawing.Point(275, 71);
             this.PwrLevelLabel2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.PwrLevelLabel2.Name = "PwrLevelLabel2";
             this.PwrLevelLabel2.Size = new System.Drawing.Size(50, 20);
