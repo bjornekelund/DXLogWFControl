@@ -19,7 +19,7 @@ namespace DXLog.net
             get { return 1023; }
         }
         
-        private ContestData contestdata = null;
+        private ContestData cdata = null;
 
         private FrmMain mainForm = null;
 
@@ -73,13 +73,14 @@ namespace DXLog.net
             13, 13, 13, 13, 13, 13, 13, 13, 13, 13,
             13, 13, 13, 13 };
 
-        int CurrentLowerEdge, CurrentUpperEdge, CurrentRefLevel, CurrentPwrLevel;
-        int CurrentMHz = 0;
-        string CurrentMode = string.Empty;
-
-        RadioType [] Radiomodel = { RadioType.None, RadioType.None };
+        private RadioType [] Radiomodel = { RadioType.None, RadioType.None };
 
         CATCommon[] Radioobject = { null, null };
+
+        int[] CurrentRefLevel = { 0, 0 };
+        int[] CurrentPwrLevel = { 0, 0 };
+        int[] CurrentMHz = { 0, 0 };
+        string[] CurrentMode = { string.Empty, string.Empty };
 
         RadioSettings Set = new RadioSettings();
         DefaultRadioSettings Def = new DefaultRadioSettings();
@@ -92,7 +93,7 @@ namespace DXLog.net
         public DXLogWFControl(ContestData cdata)
         {
             InitializeComponent();
-            contestdata = cdata;
+            this.cdata = cdata;
 
             while (contextMenuStrip1.Items.Count > 0)
                 contextMenuStrip2.Items.Add(contextMenuStrip1.Items[0]);
@@ -144,6 +145,12 @@ namespace DXLog.net
                         Radiomodel[r] = RadioType.ElecraftK4;
                     else if (radioname.Contains(" 890") || radioname.Contains(" 990"))
                         Radiomodel[r] = RadioType.Kenwood;
+                    else
+                        Radiomodel[r] = RadioType.None;
+                }
+                else
+                {
+                    Radiomodel[r] = RadioType.None;
                 }
             }
         }
@@ -212,7 +219,7 @@ namespace DXLog.net
 
             //mainForm.scheduler.Second -= UpdateRadio;
             //_cdata.ActiveVFOChanged -= UpdateRadio;
-            contestdata.ActiveRadioBandChanged -= UpdateRadio;
+            cdata.ActiveRadioBandChanged -= UpdateRadio;
         }
 
         public override void InitializeLayout()
@@ -225,58 +232,71 @@ namespace DXLog.net
                 {
                     //mainForm.scheduler.Second += UpdateRadio;
                     //_cdata.ActiveVFOChanged += new ContestData.ActiveVFOChange(UpdateRadio);
-                    contestdata.ActiveRadioBandChanged += new ContestData.ActiveRadioBandChange(UpdateRadio);
+                    cdata.ActiveRadioBandChanged += new ContestData.ActiveRadioBandChange(UpdateRadio);
                 }
             }
 
             UpdateRadio(1);
+            UpdateRadio(2);
         }
 
-        private void UpdateRadio(int radionumber)
+        private void UpdateRadio(int radio)
         {
-            //System.Threading.Thread.Sleep(100);
-            if (radionumber == 1)
-            {
-                CurrentMHz = (int)(radionumber == 1 ? contestdata.Radio1_ActiveFreq : contestdata.Radio2_ActiveFreq) / 1000;
-                CurrentMode = contestdata.ActiveR1Mode;
-            }
-            CurrentMHz = (int)(radionumber == 1 ? contestdata.Radio1_ActiveFreq : contestdata.Radio2_ActiveFreq) / 1000;
-            CurrentMode = contestdata.ActiveR1Mode;
+            int lowerEdge, uppderEdge;
 
-            switch (CurrentMode)
+            CurrentMHz[radio - 1] = (int)((radio == 1 ? cdata.Radio1_ActiveFreq : cdata.Radio2_ActiveFreq) / 1000);
+            CurrentMode[radio - 1] = radio == 1 ? cdata.ActiveR1Mode : cdata.ActiveR2Mode;
+
+            switch (CurrentMode[radio - 1])
             {
                 case "CW":
-                    CurrentLowerEdge = Set.LowerEdgeCW[bandIndex[CurrentMHz]];
-                    CurrentUpperEdge = Set.UpperEdgeCW[bandIndex[CurrentMHz]];
-                    CurrentRefLevel = Set.RefLevelCW[bandIndex[CurrentMHz]];
-                    CurrentPwrLevel = Set.PwrLevelCW[bandIndex[CurrentMHz]];
+                    lowerEdge = Set.LowerEdgeCW[bandIndex[CurrentMHz[radio - 1]]];
+                    uppderEdge = Set.UpperEdgeCW[bandIndex[CurrentMHz[radio - 1]]];
+                    CurrentRefLevel[radio - 1] = Set.RefLevelCW[bandIndex[CurrentMHz[radio - 1]]];
+                    CurrentPwrLevel[radio - 1] = Set.PwrLevelCW[bandIndex[CurrentMHz[radio - 1]]];
                     break;
                 case "SSB":
                 case "AM":
                 case "FM":
-                    CurrentLowerEdge = Set.LowerEdgePhone[bandIndex[CurrentMHz]];
-                    CurrentUpperEdge = Set.UpperEdgePhone[bandIndex[CurrentMHz]];
-                    CurrentRefLevel = Set.RefLevelPhone[bandIndex[CurrentMHz]];
-                    CurrentPwrLevel = Set.PwrLevelPhone[bandIndex[CurrentMHz]];
+                    lowerEdge = Set.LowerEdgePhone[bandIndex[CurrentMHz[radio - 1]]];
+                    uppderEdge = Set.UpperEdgePhone[bandIndex[CurrentMHz[radio - 1]]];
+                    CurrentRefLevel[radio - 1] = Set.RefLevelPhone[bandIndex[CurrentMHz[radio - 1]]];
+                    CurrentPwrLevel[radio - 1] = Set.PwrLevelPhone[bandIndex[CurrentMHz[radio - 1]]];
                     break;
                 default:
-                    CurrentLowerEdge = Set.LowerEdgeDigital[bandIndex[CurrentMHz]];
-                    CurrentUpperEdge = Set.UpperEdgeDigital[bandIndex[CurrentMHz]];
-                    CurrentRefLevel = Set.RefLevelDigital[bandIndex[CurrentMHz]];
-                    CurrentPwrLevel = Set.PwrLevelDigital[bandIndex[CurrentMHz]];
+                    lowerEdge = Set.LowerEdgeDigital[bandIndex[CurrentMHz[radio - 1]]];
+                    uppderEdge = Set.UpperEdgeDigital[bandIndex[CurrentMHz[radio - 1]]];
+                    CurrentRefLevel[radio - 1] = Set.RefLevelDigital[bandIndex[CurrentMHz[radio - 1]]];
+                    CurrentPwrLevel[radio - 1] = Set.PwrLevelDigital[bandIndex[CurrentMHz[radio - 1]]];
                     break;
             }
 
-            Radioobject[0] = mainForm.COMMainProvider.RadioObject(1);
+            if (radio == 1)
+            {
+                rangeLabel1.Text = string.Format("WF: {0:N0} - {1:N0}", lowerEdge, uppderEdge); ;
+            }
+            else
+            {
+                rangeLabel2.Text = string.Format("{0:N0} - {1:N0}", lowerEdge, uppderEdge);
+            }
 
-            // Update UI and waterfall edges and ref level in radio 
-            UpdateICOMEdges(CurrentLowerEdge, CurrentUpperEdge, RadioEdgeSet[CurrentMHz]);
-            rangeLabel.Text = string.Format("WF: {0:N0} - {1:N0}", CurrentLowerEdge, CurrentUpperEdge);
-            //System.Threading.Thread.Sleep(50);
-
-            UpdateICOMReflevel(CurrentRefLevel);
-            //System.Threading.Thread.Sleep(50);
-            UpdateICOMPwrlevel(CurrentPwrLevel);
+            switch (Radiomodel[radio - 1])
+            {
+                case RadioType.ICOM:
+                    // Update UI and waterfall edges and ref level in radio 
+                    UpdateICOMEdges(radio, lowerEdge, uppderEdge, RadioEdgeSet[CurrentMHz[radio - 1]]);
+                    UpdateICOMReflevel(radio, CurrentRefLevel[radio - 1]);
+                    UpdateICOMPwrlevel(radio, CurrentPwrLevel[radio - 1]);
+                    break;
+                case RadioType.ElecraftK4:
+                    break;
+                case RadioType.ElecraftKP3:
+                    break;
+                case RadioType.Kenwood:
+                    break;
+                case RadioType.Yaesu:
+                    break;
+            }
         }
 
         private void propertiesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -289,78 +309,100 @@ namespace DXLog.net
             }
 
             UpdateRadio(1);
+            UpdateRadio(2);
         }
 
-        private void OnRefSliderMouseClick(object sender, EventArgs e)
+        private void RefLevelSlider1_Scroll(object sender, EventArgs e)
         {
-            OnRefSlider();
+            OnRefSlider(0);
         }
 
         // On mouse modification of slider
-        private void OnRefSliderMouseClick(object sender, MouseEventArgs e)
+        private void RefLevelSlider1_MouseUp(object sender, MouseEventArgs e)
         {
-            //OnRefSlider();
         }
 
-        private void OnRefSlider()
+        // Mouse click
+        private void RefLevelSlider2_MouseUp(object sender, MouseEventArgs e)
         {
-            CurrentRefLevel = RefLevelSlider.Value;
+        }
 
-            UpdateICOMReflevel(CurrentRefLevel);
+        // Scroll
+        private void RefLevelSlider2_Scroll(object sender, EventArgs e)
+        {
+            OnRefSlider(1);
+        }
 
-            switch (CurrentMode)
+        private void OnRefSlider(int index)
+        {
+            CurrentRefLevel[index] = index == 0 ? RefLevelSlider1.Value : RefLevelSlider2.Value;
+
+            UpdateICOMReflevel(index + 1, CurrentRefLevel[index]);
+
+            switch (CurrentMode[index])
             {
                 case "CW":
-                    Set.RefLevelCW[bandIndex[CurrentMHz]] = CurrentRefLevel;
+                    Set.RefLevelCW[bandIndex[CurrentMHz[index]]] = CurrentRefLevel[index];
                     break;
                 case "SSB":
                 case "AM":
                 case "FM":
-                    Set.RefLevelPhone[bandIndex[CurrentMHz]] = CurrentRefLevel;
+                    Set.RefLevelPhone[bandIndex[CurrentMHz[index]]] = CurrentRefLevel[index];
                     break;
                 default:
-                    Set.RefLevelDigital[bandIndex[CurrentMHz]] = CurrentRefLevel;
+                    Set.RefLevelDigital[bandIndex[CurrentMHz[index]]] = CurrentRefLevel[index];
                     break;
             }
         }
 
-        // on mouse movement of power slider
-        private void OnPwrSliderMouseClick(object sender, MouseEventArgs e)
+        // Mouse up
+        private void OnPwrLevelSlider1_MouseUp(object sender, MouseEventArgs e)
         {
-            //OnPwrSlider();
         }
 
-        private void OnPwrSliderMouseClick(object sender, EventArgs e)
+        // Scroll
+        private void OnPwrLevelSlider1_Scroll(object sender, EventArgs e)
         {
-            OnPwrSlider();
+            OnPwrSlider(0);
         }
 
-        private void OnPwrSlider() 
-        { 
-            CurrentPwrLevel = PwrLevelSlider.Value;
-            UpdateICOMPwrlevel(CurrentPwrLevel);
+        // Mouse up
+        private void OnPwrLevelSlider2_MouseUp(object sender, MouseEventArgs e)
+        {
+        }
 
-            if (CurrentMHz != 0)
+        // Scroll
+        private void OnPwrLevelSlider2_Scroll(object sender, EventArgs e)
+        {
+            OnPwrSlider(1);
+        }
+
+        private void OnPwrSlider(int index)
+        {
+            CurrentPwrLevel[index] = index == 0 ? PwrLevelSlider1.Value : PwrLevelSlider2.Value;
+            UpdateICOMPwrlevel(index + 1, CurrentPwrLevel[index]);
+
+            if (CurrentMHz[index] != 0)
             {
-                switch (CurrentMode)
+                switch (CurrentMode[index])
                 {
                     case "CW":
-                        Set.PwrLevelCW[bandIndex[CurrentMHz]] = CurrentPwrLevel;
+                        Set.PwrLevelCW[bandIndex[CurrentMHz[index]]] = CurrentPwrLevel[index];
                         break;
                     case "SSB":
                     case "AM":
                     case "FM":
-                        Set.PwrLevelPhone[bandIndex[CurrentMHz]] = CurrentPwrLevel;
+                        Set.PwrLevelPhone[bandIndex[CurrentMHz[index]]] = CurrentPwrLevel[index];
                         break;
                     default:
-                        Set.PwrLevelDigital[bandIndex[CurrentMHz]] = CurrentPwrLevel;
+                        Set.PwrLevelDigital[bandIndex[index]] = CurrentPwrLevel[index];
                         break;
                 }
             }
         }
 
         // Update ICOM radio with new waterfall edges
-        private void UpdateICOMEdges(int lower_edge, int upper_edge, int ICOMedgeSegment)
+        private void UpdateICOMEdges(int radio, int lower_edge, int upper_edge, int ICOMedgeSegment)
         {
             // Compose CI-V command to set waterfall edges
             byte[] CIVSetEdges = new byte[]
@@ -390,23 +432,23 @@ namespace DXLog.net
             //debuglabel2.Text = BitConverter.ToString(CIVSetEdgeSetMain).Replace("-", " ");
             //debuglabel3.Text = BitConverter.ToString(CIVSetEdges).Replace("-", " ");
 
-            if (Radioobject[0] != null && Radioobject[0].IsICOM())
+            if (Radioobject[radio - 1] != null && Radioobject[radio - 1].IsICOM())
             {
-                Radioobject[0].SendCustomCommand(CIVSetFixedModeMain);
-                Radioobject[0].SendCustomCommand(CIVSetFixedModeSub);
-                Radioobject[0].SendCustomCommand(CIVSetEdgeSetMain);
-                Radioobject[0].SendCustomCommand(CIVSetEdgeSetSub);
-                Radioobject[0].SendCustomCommand(CIVSetEdges);
+                Radioobject[radio - 1].SendCustomCommand(CIVSetFixedModeMain);
+                Radioobject[radio - 1].SendCustomCommand(CIVSetFixedModeSub);
+                Radioobject[radio - 1].SendCustomCommand(CIVSetEdgeSetMain);
+                Radioobject[radio - 1].SendCustomCommand(CIVSetEdgeSetSub);
+                Radioobject[radio - 1].SendCustomCommand(CIVSetEdges);
             }
         }
 
         // Update ICOM radio with new REF level
-        private void UpdateICOMReflevel(int ref_level)
+        private void UpdateICOMReflevel(int radionumber, int ref_level)
         {
-            if (RefLevelLabel != null)
+            if (RefLevelLabel1 != null)
             {
-                RefLevelSlider.Value = ref_level;
-                RefLevelLabel.Text = string.Format("REF: {0,3:+#;-#;0}dB", ref_level);
+                RefLevelSlider1.Value = ref_level;
+                RefLevelLabel1.Text = string.Format("REF: {0,3:+#;-#;0}dB", ref_level);
             }
 
             int absRefLevel = (ref_level >= 0) ? ref_level : -ref_level;
@@ -421,20 +463,31 @@ namespace DXLog.net
             //debuglabel2.Text = "";
             //debuglabel3.Text = "";
 
-            if (Radioobject[0] != null && Radioobject[0].IsICOM())
+            if (Radioobject[radionumber - 1] != null && Radioobject[radionumber - 1].IsICOM())
             {
-                Radioobject[0].SendCustomCommand(CIVSetRefLevelMain);
-                Radioobject[0].SendCustomCommand(CIVSetRefLevelSub);
+                Radioobject[radionumber - 1].SendCustomCommand(CIVSetRefLevelMain);
+                Radioobject[radionumber - 1].SendCustomCommand(CIVSetRefLevelSub);
             }
         }
 
         // Update ICOM radio with new PWR level
-        private void UpdateICOMPwrlevel(int pwr_level)
+        private void UpdateICOMPwrlevel(int radionumber, int pwr_level)
         {
-            if (PwrLevelSlider != null)
+            if (radionumber == 1)
             {
-                PwrLevelSlider.Value = pwr_level;
-                PwrLevelLabel.Text = string.Format("PWR:{0,3}%", pwr_level);
+                if (PwrLevelSlider1 != null)
+                {
+                    PwrLevelSlider1.Value = pwr_level;
+                    PwrLevelLabel1.Text = string.Format("PWR:{0,3}%", pwr_level);
+                }
+            }
+            else
+            {
+                if (PwrLevelSlider2 != null)
+                {
+                    PwrLevelSlider2.Value = pwr_level;
+                    PwrLevelLabel2.Text = string.Format("{0,3}%", pwr_level);
+                }
             }
 
             int icomPower = (int)(255.0f * pwr_level / 100.0f + 0.99f); // Weird ICOM mapping of percent to binary
@@ -445,9 +498,9 @@ namespace DXLog.net
             //debuglabel1.Text = BitConverter.ToString(CIVSetPwrLevel).Replace("-", " ");
             //debuglabel2.Text = "";
             //debuglabel3.Text = "";
-            if (Radioobject[0] != null && Radioobject[0].IsICOM())
+            if (Radioobject[radionumber - 1] != null && Radioobject[radionumber - 1].IsICOM())
             {
-                Radioobject[0].SendCustomCommand(CIVSetPwrLevel);
+                Radioobject[radionumber - 1].SendCustomCommand(CIVSetPwrLevel);
             }
         }
     }
